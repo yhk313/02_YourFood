@@ -17,10 +17,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
-    name = "member",
+    name = "auth_member",
     indexes = {
         @Index(
-            name = "idx__member__username",
+            name = "idx__auth_member__username",
             columnList = "username",
             unique = true
         )
@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 public class AuthMember {
 
     @Id
-    @Column(name = "memberId")
+    @Column(name = "auth_member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)

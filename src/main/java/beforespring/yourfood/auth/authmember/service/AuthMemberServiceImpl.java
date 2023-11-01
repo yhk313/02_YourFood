@@ -61,7 +61,7 @@ public class AuthMemberServiceImpl implements AuthMemberService {
     public void joinConfirm(ConfirmTokenRequest request) {
         AuthMember authMember = authMemberRepository.findByUsername(request.getUsername()).orElseThrow(
             AuthMemberNotFoundException::new);
-        Confirm confirm = confirmRepository.findByMember(authMember).orElseThrow(
+        Confirm confirm = confirmRepository.findByAuthMember(authMember).orElseThrow(
             ConfirmNotFoundException::new);
         authMember.verifyPassword(request.getPassword(), passwordHasher);
         confirm.verifyToken(request.getToken());
