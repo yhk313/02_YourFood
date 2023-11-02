@@ -1,4 +1,4 @@
-package beforespring.yourfood.web.response.review;
+package beforespring.yourfood.web.api.review.response;
 
 import java.time.LocalDateTime;
 

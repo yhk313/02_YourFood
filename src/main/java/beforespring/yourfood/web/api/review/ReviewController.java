@@ -1,7 +1,7 @@
 package beforespring.yourfood.web.api.review;
 
-import beforespring.yourfood.web.request.review.ReviewRequest;
-import beforespring.yourfood.web.response.review.ReviewResponse;
+import beforespring.yourfood.web.api.review.request.ReviewRequest;
+import beforespring.yourfood.web.api.review.response.ReviewResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
