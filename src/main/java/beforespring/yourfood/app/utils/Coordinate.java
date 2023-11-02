@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 
 @Embeddable
 public class Coordinate {
-    @Column(nullable = false, precision = 3, scale = 8, columnDefinition = "DECIMAL(3,8)")
+    @Column(nullable = false, precision = 11, scale = 8, columnDefinition = "DECIMAL(11,8)")
     private BigDecimal lat;
-    @Column(nullable = false ,precision = 3, scale = 8, columnDefinition = "DECIMAL(3,8)")
+    @Column(nullable = false ,precision = 11, scale = 8, columnDefinition = "DECIMAL(11,8)")
     private BigDecimal lon;
 }
