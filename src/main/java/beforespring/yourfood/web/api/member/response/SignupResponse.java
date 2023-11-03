@@ -1,5 +1,8 @@
 package beforespring.yourfood.web.api.member.response;
 
-public record SignupResponse() {
+import lombok.Builder;
+
+@Builder
+public record SignupResponse(Long id) {
 
 }

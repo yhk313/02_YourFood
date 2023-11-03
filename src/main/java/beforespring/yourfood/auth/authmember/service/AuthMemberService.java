@@ -3,9 +3,9 @@ package beforespring.yourfood.auth.authmember.service;
 
 import beforespring.yourfood.auth.jwt.domain.AuthToken;
 import beforespring.yourfood.auth.authmember.service.dto.ConfirmTokenDto.ConfirmTokenRequest;
-import beforespring.yourfood.auth.authmember.service.dto.CreateMemberDto.CreateMemberRequest;
 import beforespring.yourfood.auth.authmember.service.dto.PasswordAuth;
 import beforespring.yourfood.auth.authmember.service.dto.RefreshTokenAuth;
+import beforespring.yourfood.web.api.member.request.SignupMemberRequest;
 
 public interface AuthMemberService {
 
@@ -15,7 +15,7 @@ public interface AuthMemberService {
      * @param request 멤버 생성 요청 DTO
      * @return member id
      */
-    Long join(CreateMemberRequest request);
+    Long join(SignupMemberRequest request);
 
     /**
      * 가입 승인

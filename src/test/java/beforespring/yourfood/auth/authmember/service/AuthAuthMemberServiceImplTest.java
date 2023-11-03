@@ -16,13 +16,14 @@ import beforespring.yourfood.auth.authmember.exception.PasswordMismatchException
 import beforespring.yourfood.auth.authmember.exception.TokenMismatchException;
 import beforespring.yourfood.auth.authmember.infra.TokenSenderImpl;
 import beforespring.yourfood.auth.authmember.service.dto.ConfirmTokenDto.ConfirmTokenRequest;
-import beforespring.yourfood.auth.authmember.service.dto.CreateMemberDto.CreateMemberRequest;
 import beforespring.yourfood.auth.authmember.service.dto.PasswordAuth;
 import beforespring.yourfood.auth.authmember.service.dto.RefreshTokenAuth;
 import beforespring.yourfood.auth.authmember.service.exception.ConfirmNotFoundException;
 import beforespring.yourfood.auth.authmember.service.exception.AuthMemberNotFoundException;
 import java.util.List;
 import javax.persistence.EntityManager;
+
+import beforespring.yourfood.web.api.member.request.SignupMemberRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ class AuthAuthMemberServiceImplTest {
     @Autowired
     EntityManager em;
 
-    private CreateMemberRequest createMemberRequest;
+    private SignupMemberRequest signupMemberRequest;
     private ConfirmTokenRequest confirmTokenRequest;
 
 
@@ -55,7 +56,7 @@ class AuthAuthMemberServiceImplTest {
         String givenEmail = "givenEmail@gmail.com";
         String givenPassword = "passwdThatShou!dBe0kay";
 
-        createMemberRequest = new CreateMemberRequest(givenUsername, givenEmail, givenPassword);
+        signupMemberRequest = new SignupMemberRequest(givenUsername, givenEmail, givenPassword);
     }
 
     @Test
@@ -63,12 +64,12 @@ class AuthAuthMemberServiceImplTest {
     void member_join_test() {
 
         //when
-        Long memberId = authMemberService.join(createMemberRequest);
+        Long memberId = authMemberService.join(signupMemberRequest);
         AuthMember findAuthMember = authMemberRepository.findById(memberId).orElseThrow(
             AuthMemberNotFoundException::new);
 
         //then
-        assertThat(findAuthMember.getUsername()).isEqualTo(createMemberRequest.getUsername());
+        assertThat(findAuthMember.getUsername()).isEqualTo(signupMemberRequest.getUsername());
     }
 
     @Test
@@ -76,10 +77,10 @@ class AuthAuthMemberServiceImplTest {
     void create_confirm_test() {
 
         //when
-        Long memberId = authMemberService.join(createMemberRequest);
+        Long memberId = authMemberService.join(signupMemberRequest);
         AuthMember findAuthMember = authMemberRepository.findById(memberId).orElseThrow(
             AuthMemberNotFoundException::new);
-        Confirm findConfirm = confirmRepository.findByMember(findAuthMember).orElseThrow(
+        Confirm findConfirm = confirmRepository.findByAuthMember(findAuthMember).orElseThrow(
             ConfirmNotFoundException::new);
 
         //then
@@ -90,14 +91,14 @@ class AuthAuthMemberServiceImplTest {
     @DisplayName("가입 승인 요청의 토큰과 저장된 토큰이 일치하면 멤버가 승인 상태가 되어야 합니다.")
     void join_confirm_test() {
         //given
-        Long memberId = authMemberService.join(createMemberRequest);
+        Long memberId = authMemberService.join(signupMemberRequest);
         AuthMember findAuthMember = authMemberRepository.findById(memberId).orElseThrow(
             AuthMemberNotFoundException::new);
-        Confirm findConfirm = confirmRepository.findByMember(findAuthMember).orElseThrow(ConfirmNotFoundException::new);
+        Confirm findConfirm = confirmRepository.findByAuthMember(findAuthMember).orElseThrow(ConfirmNotFoundException::new);
 
         //when
         String token = findConfirm.getToken();
-        confirmTokenRequest = new ConfirmTokenRequest(createMemberRequest.getUsername(), createMemberRequest.getPassword(), token);
+        confirmTokenRequest = new ConfirmTokenRequest(signupMemberRequest.getUsername(), signupMemberRequest.getPassword(), token);
         authMemberService.joinConfirm(confirmTokenRequest);
 
         //then
@@ -108,12 +109,12 @@ class AuthAuthMemberServiceImplTest {
     @DisplayName("가입 승인 요청의 토큰과 저장된 토큰이 일치하지 않으면 가입 승인 요청이 실패해야 합니다.")
     void join_confirm_deny_test() {
         //given
-        authMemberService.join(createMemberRequest);
+        authMemberService.join(signupMemberRequest);
         TokenSender tokenSender = new TokenSenderImpl();
 
         //when //then
         String newToken = tokenSender.generateToken();
-        confirmTokenRequest = new ConfirmTokenRequest(createMemberRequest.getUsername(), createMemberRequest.getPassword(), newToken);
+        confirmTokenRequest = new ConfirmTokenRequest(signupMemberRequest.getUsername(), signupMemberRequest.getPassword(), newToken);
 
         assertThatThrownBy(() -> authMemberService.joinConfirm(confirmTokenRequest))
             .isInstanceOf(TokenMismatchException.class)
@@ -124,15 +125,15 @@ class AuthAuthMemberServiceImplTest {
     @DisplayName("가입 승인 요청 시 저장된 계정이 없으면 가입 승인 요청이 실패해야 합니다.")
     void join_confirm_no_user_test() {
         //given
-        Long memberId = authMemberService.join(createMemberRequest);
+        Long memberId = authMemberService.join(signupMemberRequest);
         AuthMember findAuthMember = authMemberRepository.findById(memberId).orElseThrow(
             AuthMemberNotFoundException::new);
-        Confirm findConfirm = confirmRepository.findByMember(findAuthMember).orElseThrow(ConfirmNotFoundException::new);
+        Confirm findConfirm = confirmRepository.findByAuthMember(findAuthMember).orElseThrow(ConfirmNotFoundException::new);
         String token = findConfirm.getToken();
 
         //when //then
         String wrongUsername = "aaa";
-        confirmTokenRequest = new ConfirmTokenRequest(wrongUsername, createMemberRequest.getPassword(), token);
+        confirmTokenRequest = new ConfirmTokenRequest(wrongUsername, signupMemberRequest.getPassword(), token);
 
         assertThatThrownBy(() -> authMemberService.joinConfirm(confirmTokenRequest))
             .isInstanceOf(AuthMemberNotFoundException.class)
@@ -144,15 +145,15 @@ class AuthAuthMemberServiceImplTest {
     @DisplayName("가입 승인 요청 시 저장된 멤버와 비밀번호가 일치하지 않으면 가입 승인 요청이 실패해야 합니다.")
     void join_confirm_mismatch_password_test() {
         //given
-        Long memberId = authMemberService.join(createMemberRequest);
+        Long memberId = authMemberService.join(signupMemberRequest);
         AuthMember findAuthMember = authMemberRepository.findById(memberId).orElseThrow(
             AuthMemberNotFoundException::new);
-        Confirm findConfirm = confirmRepository.findByMember(findAuthMember).orElseThrow(ConfirmNotFoundException::new);
+        Confirm findConfirm = confirmRepository.findByAuthMember(findAuthMember).orElseThrow(ConfirmNotFoundException::new);
         String token = findConfirm.getToken();
 
         //when //then
         String wrongPassword = "aaa";
-        confirmTokenRequest = new ConfirmTokenRequest(createMemberRequest.getUsername(), wrongPassword, token);
+        confirmTokenRequest = new ConfirmTokenRequest(signupMemberRequest.getUsername(), wrongPassword, token);
 
         assertThatThrownBy(() -> authMemberService.joinConfirm(confirmTokenRequest))
             .isInstanceOf(PasswordMismatchException.class)
