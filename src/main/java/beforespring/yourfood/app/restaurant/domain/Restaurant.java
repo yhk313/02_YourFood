@@ -1,6 +1,6 @@
 package beforespring.yourfood.app.restaurant.domain;
 
-import beforespring.yourfood.app.utils.Coordinate;
+import beforespring.yourfood.app.utils.Coordinates;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,7 +49,7 @@ public class Restaurant {
     private AddressCode addressCode;
 
     @Embedded
-    private Coordinate coordinate;
+    private Coordinates coordinates;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "cuisine_type", nullable = false)
@@ -70,14 +70,14 @@ public class Restaurant {
         String description,
         String address,
         AddressCode addressCode,
-        Coordinate coordinate,
+        Coordinates coordinates,
         CuisineType cuisineType,
         Boolean operating) {
         this.name = name;
         this.description = description;
         this.address = address;
         this.addressCode = addressCode;
-        this.coordinate = coordinate;
+        this.coordinates = coordinates;
         this.cuisineType = cuisineType;
         this.rating = BigDecimal.valueOf(0.0);
         this.operating = operating;

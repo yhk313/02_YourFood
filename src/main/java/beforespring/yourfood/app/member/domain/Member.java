@@ -1,6 +1,6 @@
 package beforespring.yourfood.app.member.domain;
 
-import beforespring.yourfood.app.utils.Coordinate;
+import beforespring.yourfood.app.utils.Coordinates;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class Member {
     @Column(nullable = false)
     private String username;
     @Embedded
-    private Coordinate coordinate;
+    private Coordinates coordinates;
 
     @Column(name = "lunch_noti_status")
     private boolean lunchNotiStatus;
@@ -48,10 +48,10 @@ public class Member {
     /**
      * 회원의 위도와 경도 업데이트
      *
-     * @param coordinate 좌표
+     * @param coordinates 좌표
      */
-    public void updateMemberLocation(Coordinate coordinate) {
-        this.coordinate = coordinate;
+    public void updateMemberLocation(Coordinates coordinates) {
+        this.coordinates = coordinates;
     }
 
     /**
