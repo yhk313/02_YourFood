@@ -1,15 +1,21 @@
 package beforespring.yourfood.web.api.restaurant;
 
+import beforespring.yourfood.app.restaurant.service.RestaurantServiceImpl;
+import beforespring.yourfood.app.restaurant.service.dto.RestaurantWithReviewDto;
 import beforespring.yourfood.web.api.common.GenericResponse;
 
+import beforespring.yourfood.web.api.common.StatusCode;
 import beforespring.yourfood.web.api.restaurant.response.RegionListResponse;
-import beforespring.yourfood.web.api.restaurant.response.RestaurantDetailResponse;
 import beforespring.yourfood.web.api.restaurant.response.RestaurantListResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/restaurants")
+@RequiredArgsConstructor
 public class RestaurantController {
+    private final RestaurantServiceImpl restaurantService;
+
     /**
      * 모든 시군구 목록 조회
      *
@@ -23,13 +29,18 @@ public class RestaurantController {
     /**
      * 맛집 상세 정보 조회
      *
-     * @param restaurant_id 맛집 id
-     * @return
+     * @param restaurantId 맛집 id
+     * @return 레스토랑의 상세 정보
      */
 
-    @GetMapping("/{restaurant_id}")
-    public GenericResponse<RestaurantDetailResponse> getRestaurantDetail(@PathVariable Long restaurant_id) {
-        return null;
+    @GetMapping("/{restaurantId}")
+    public GenericResponse<RestaurantWithReviewDto> getRestaurantDetail(@PathVariable Long restaurantId) {
+        RestaurantWithReviewDto restaurantDto = restaurantService.getRestaurantDetail(restaurantId);
+
+        return GenericResponse.<RestaurantWithReviewDto>builder()
+            .statusCode(StatusCode.OK)
+            .message("Success")
+            .data(restaurantDto).build();
     }
 
     /**
