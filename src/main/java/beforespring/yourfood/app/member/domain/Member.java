@@ -39,6 +39,9 @@ public class Member {
     @Column(name = "noti_agreed_at")
     private LocalDateTime notiAgreedAt;
 
+    @Column(name = "location_updated_at")
+    private LocalDateTime locationUpdatedAt;
+
     @Builder
     public Member(String username) {
         this.username = username;
@@ -52,6 +55,7 @@ public class Member {
      */
     public void updateMemberLocation(Coordinates coordinates) {
         this.coordinates = coordinates;
+        this.locationUpdatedAt = LocalDateTime.now();
     }
 
     /**
