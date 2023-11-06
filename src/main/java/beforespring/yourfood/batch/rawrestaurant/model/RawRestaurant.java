@@ -1,23 +1,19 @@
 package beforespring.yourfood.batch.rawrestaurant.model;
 
-import java.util.Objects;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(
     name = "raw_restaurant",
     indexes = {
         @Index(
+
             name = "idx__raw_restaurant__BIZPLC_NM__REFINE_ROADNM_ADDR",
             columnList = "BIZPLC_NM, REFINE_ROADNM_ADDR",
             unique = true
@@ -35,7 +31,7 @@ public class RawRestaurant {
     private RawRestaurantId rawRestaurantId;
     private String SIGUN_NM;
     private String SIGUN_CD;
-//    private String BIZPLC_NM;
+    //    private String BIZPLC_NM;
     private String LICENSG_DE;
     private String BSN_STATE_NM;
     private String CLSBIZ_DE;
@@ -50,7 +46,7 @@ public class RawRestaurant {
     private String SANITTN_INDUTYPE_NM;
     private String SANITTN_BIZCOND_NM;
     private String TOT_EMPLY_CNT;
-//    private String REFINE_ROADNM_ADDR;
+    //    private String REFINE_ROADNM_ADDR;
     private String REFINE_LOTNO_ADDR;
     private String REFINE_ZIP_CD;
     private String REFINE_WGS84_LAT;
@@ -60,7 +56,6 @@ public class RawRestaurant {
      * RawRestaurant의 값이 변경되었으며, 서비스에서 필요한 값이기 때문에 서비스에 변경사항을 업데이트를 해줘야하는 경우 true
      */
     private boolean IS_UPDATED;
-
 
     @Builder
     public RawRestaurant(
@@ -120,6 +115,7 @@ public class RawRestaurant {
     /**
      * DB에서 불러온 엔티티의 값을 외부에서 새로 불러온 엔티티의 값으로 업데이트함.
      * 외부에서 새로 불러온 객체의 값을 업데이트해선 안 됨. (잠재적 버그 발생 방지)
+     *
      * @param fetched 새로 fetch 받아온 데이터
      */
     public void updateDataFrom(RawRestaurant fetched) {
@@ -153,6 +149,7 @@ public class RawRestaurant {
 
     /**
      * 이전 RawRestaurant와 비교하여 정보가 변경되었는지 여부. 변경 불가능한 값은 체크하지 않음.
+     *
      * @param oldData 비교할 대상
      * @return 업데이트 되었는지 여부
      */
@@ -162,26 +159,27 @@ public class RawRestaurant {
             throw new IllegalCallerException("외부에서 새로 불러온 객체가 아닌, DB에서 가져온 객체만 호출 가능");
         }
         return !(Objects.equals(getRawRestaurantId(), oldData.getRawRestaurantId())
-                   && Objects.equals(getSIGUN_NM(), oldData.getSIGUN_NM())
-                   && Objects.equals(getSIGUN_CD(), oldData.getSIGUN_CD())
-                   && Objects.equals(getLICENSG_DE(), oldData.getLICENSG_DE())
-                   && Objects.equals(getBSN_STATE_NM(), oldData.getBSN_STATE_NM())
-                   && Objects.equals(getCLSBIZ_DE(), oldData.getCLSBIZ_DE())
-                   && Objects.equals(getLOCPLC_AR(), oldData.getLOCPLC_AR())
-                   && Objects.equals(getGRAD_FACLT_DIV_NM(), oldData.getGRAD_FACLT_DIV_NM())
-                   && Objects.equals(getMALE_ENFLPSN_CNT(), oldData.getMALE_ENFLPSN_CNT())
-                   && Objects.equals(getYY(), oldData.getYY()) && Objects.equals(
+                     && Objects.equals(getSIGUN_NM(), oldData.getSIGUN_NM())
+                     && Objects.equals(getSIGUN_CD(), oldData.getSIGUN_CD())
+                     && Objects.equals(getLICENSG_DE(), oldData.getLICENSG_DE())
+                     && Objects.equals(getBSN_STATE_NM(), oldData.getBSN_STATE_NM())
+                     && Objects.equals(getCLSBIZ_DE(), oldData.getCLSBIZ_DE())
+                     && Objects.equals(getLOCPLC_AR(), oldData.getLOCPLC_AR())
+                     && Objects.equals(getGRAD_FACLT_DIV_NM(), oldData.getGRAD_FACLT_DIV_NM())
+                     && Objects.equals(getMALE_ENFLPSN_CNT(), oldData.getMALE_ENFLPSN_CNT())
+                     && Objects.equals(getYY(), oldData.getYY()) && Objects.equals(
             getMULTI_USE_BIZESTBL_YN(), oldData.getMULTI_USE_BIZESTBL_YN()) && Objects.equals(
             getTOT_FACLT_SCALE(), oldData.getTOT_FACLT_SCALE()) && Objects.equals(
             getFEMALE_ENFLPSN_CNT(), oldData.getFEMALE_ENFLPSN_CNT()) && Objects.equals(
             getBSNSITE_CIRCUMFR_DIV_NM(), oldData.getBSNSITE_CIRCUMFR_DIV_NM())
-                   && Objects.equals(getSANITTN_INDUTYPE_NM(), oldData.getSANITTN_INDUTYPE_NM())
-                   && Objects.equals(getSANITTN_BIZCOND_NM(), oldData.getSANITTN_BIZCOND_NM())
-                   && Objects.equals(getTOT_EMPLY_CNT(), oldData.getTOT_EMPLY_CNT()));
+                     && Objects.equals(getSANITTN_INDUTYPE_NM(), oldData.getSANITTN_INDUTYPE_NM())
+                     && Objects.equals(getSANITTN_BIZCOND_NM(), oldData.getSANITTN_BIZCOND_NM())
+                     && Objects.equals(getTOT_EMPLY_CNT(), oldData.getTOT_EMPLY_CNT()));
     }
 
     /**
      * 서비스에서 필요로 하는 값 중, 변경된 값이 있는지 확인함. 현재 필요한 값은 영업 여부 값 뿐임.
+     *
      * @param oldData
      * @return 영업 여부가 변경되었는지.
      */

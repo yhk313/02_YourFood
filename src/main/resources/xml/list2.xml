@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Genrestrtcate>
+    <head>
+        <list_total_count>4752</list_total_count>
+        <RESULT>
+            <CODE>INFO-000</CODE>
+            <MESSAGE>정상 처리되었습니다.</MESSAGE>
+        </RESULT>
+        <api_version>1.0v</api_version>
+    </head>
+    <row>
+        <SIGUN_NM>하남시</SIGUN_NM>
+        <SIGUN_CD/>
+        <BIZPLC_NM>Cafe Walnut(커피,호두나무)</BIZPLC_NM>
+        <LICENSG_DE>19960806</LICENSG_DE>
+        <BSN_STATE_NM>영업</BSN_STATE_NM>
+        <CLSBIZ_DE/>
+        <LOCPLC_AR/>
+        <GRAD_FACLT_DIV_NM/>
+        <MALE_ENFLPSN_CNT>0</MALE_ENFLPSN_CNT>
+        <YY/>
+        <MULTI_USE_BIZESTBL_YN/>
+        <GRAD_DIV_NM/>
+        <TOT_FACLT_SCALE/>
+        <FEMALE_ENFLPSN_CNT>0</FEMALE_ENFLPSN_CNT>
+        <BSNSITE_CIRCUMFR_DIV_NM>기타</BSNSITE_CIRCUMFR_DIV_NM>
+        <SANITTN_INDUTYPE_NM/>
+        <SANITTN_BIZCOND_NM>까페</SANITTN_BIZCOND_NM>
+        <TOT_EMPLY_CNT/>
+        <REFINE_LOTNO_ADDR>경기도 하남시 춘궁동 500-4 (1,2층)</REFINE_LOTNO_ADDR>
+        <REFINE_ROADNM_ADDR>경기도 하남시 서하남로390번길 96 (춘궁동,(1,2층))</REFINE_ROADNM_ADDR>
+        <REFINE_ZIP_CD>13016</REFINE_ZIP_CD>
+        <REFINE_WGS84_LOGT>127.1856589886</REFINE_WGS84_LOGT>
+        <REFINE_WGS84_LAT>37.5206797162</REFINE_WGS84_LAT>
+    </row>
+    <row>
+        <SIGUN_NM>하남시</SIGUN_NM>
+        <SIGUN_CD/>
+        <BIZPLC_NM>김보성 star.s</BIZPLC_NM>
+        <LICENSG_DE>19990302</LICENSG_DE>
+        <BSN_STATE_NM>영업</BSN_STATE_NM>
+        <CLSBIZ_DE/>
+        <LOCPLC_AR/>
+        <GRAD_FACLT_DIV_NM/>
+        <MALE_ENFLPSN_CNT>0</MALE_ENFLPSN_CNT>
+        <YY/>
+        <MULTI_USE_BIZESTBL_YN/>
+        <GRAD_DIV_NM/>
+        <TOT_FACLT_SCALE/>
+        <FEMALE_ENFLPSN_CNT>0</FEMALE_ENFLPSN_CNT>
+        <BSNSITE_CIRCUMFR_DIV_NM>기타</BSNSITE_CIRCUMFR_DIV_NM>
+        <SANITTN_INDUTYPE_NM/>
+        <SANITTN_BIZCOND_NM>까페</SANITTN_BIZCOND_NM>
+        <TOT_EMPLY_CNT/>
+        <REFINE_LOTNO_ADDR>경기도 하남시 덕풍동 42-1번지 37-2(1,2층)</REFINE_LOTNO_ADDR>
+        <REFINE_ROADNM_ADDR>경기도 하남시 미사대로 612 (덕풍동,37-2(1,2층))</REFINE_ROADNM_ADDR>
+        <REFINE_ZIP_CD>12925</REFINE_ZIP_CD>
+        <REFINE_WGS84_LOGT>127.2114154008</REFINE_WGS84_LOGT>
+        <REFINE_WGS84_LAT>37.5530140755</REFINE_WGS84_LAT>
+    </row>
+    <row>
+        <SIGUN_NM>화성시</SIGUN_NM>
+        <SIGUN_CD/>
+        <BIZPLC_NM>라본테이블&amp;카페</BIZPLC_NM>
+        <LICENSG_DE>20141010</LICENSG_DE>
+        <BSN_STATE_NM>영업</BSN_STATE_NM>
+        <CLSBIZ_DE/>
+        <LOCPLC_AR/>
+        <GRAD_FACLT_DIV_NM/>
+        <MALE_ENFLPSN_CNT>0</MALE_ENFLPSN_CNT>
+        <YY/>
+        <MULTI_USE_BIZESTBL_YN/>
+        <GRAD_DIV_NM/>
+        <TOT_FACLT_SCALE/>
+        <FEMALE_ENFLPSN_CNT>0</FEMALE_ENFLPSN_CNT>
+        <BSNSITE_CIRCUMFR_DIV_NM/>
+        <SANITTN_INDUTYPE_NM/>
+        <SANITTN_BIZCOND_NM>까페</SANITTN_BIZCOND_NM>
+        <TOT_EMPLY_CNT>0</TOT_EMPLY_CNT>
+        <REFINE_LOTNO_ADDR>경기도 화성시 반송동 93-3</REFINE_LOTNO_ADDR>
+        <REFINE_ROADNM_ADDR>경기도 화성시 동탄반석로 172 (반송동, 동탄파라곤 201,202호)</REFINE_ROADNM_ADDR>
+        <REFINE_ZIP_CD>18454</REFINE_ZIP_CD>
+        <REFINE_WGS84_LOGT>127.0721677943</REFINE_WGS84_LOGT>
+        <REFINE_WGS84_LAT>37.2039744437</REFINE_WGS84_LAT>
+    </row>
+    <row>
+        <SIGUN_NM>화성시</SIGUN_NM>
+        <SIGUN_CD/>
+        <BIZPLC_NM>카페루멘</BIZPLC_NM>
+        <LICENSG_DE>20150106</LICENSG_DE>
+        <BSN_STATE_NM>영업</BSN_STATE_NM>
+        <CLSBIZ_DE/>
+        <LOCPLC_AR/>
+        <GRAD_FACLT_DIV_NM/>
+        <MALE_ENFLPSN_CNT>0</MALE_ENFLPSN_CNT>
+        <YY/>
+        <MULTI_USE_BIZESTBL_YN/>
+        <GRAD_DIV_NM/>
+        <TOT_FACLT_SCALE/>
+        <FEMALE_ENFLPSN_CNT>0</FEMALE_ENFLPSN_CNT>
+        <BSNSITE_CIRCUMFR_DIV_NM/>
+        <SANITTN_INDUTYPE_NM/>
+        <SANITTN_BIZCOND_NM>까페</SANITTN_BIZCOND_NM>
+        <TOT_EMPLY_CNT>0</TOT_EMPLY_CNT>
+        <REFINE_LOTNO_ADDR>경기도 화성시 석우동 46 동탄삼희프라자 105호</REFINE_LOTNO_ADDR>
+        <REFINE_ROADNM_ADDR>경기도 화성시 삼성1로 84, 1층 105호 (석우동, 동탄삼희프라자)</REFINE_ROADNM_ADDR>
+        <REFINE_ZIP_CD>18451</REFINE_ZIP_CD>
+        <REFINE_WGS84_LOGT>127.0806674354</REFINE_WGS84_LOGT>
+        <REFINE_WGS84_LAT>37.2116217062</REFINE_WGS84_LAT>
+    </row>
+    <row>
+        <SIGUN_NM>안양시</SIGUN_NM>
+        <SIGUN_CD>41170</SIGUN_CD>
+        <BIZPLC_NM>인생닭강정</BIZPLC_NM>
+        <LICENSG_DE>2002-12-05</LICENSG_DE>
+        <BSN_STATE_NM>폐업</BSN_STATE_NM>
+        <CLSBIZ_DE>2023-06-12</CLSBIZ_DE>
+        <LOCPLC_AR/>
+        <GRAD_FACLT_DIV_NM/>
+        <MALE_ENFLPSN_CNT>0</MALE_ENFLPSN_CNT>
+        <YY/>
+        <MULTI_USE_BIZESTBL_YN/>
+        <GRAD_DIV_NM/>
+        <TOT_FACLT_SCALE/>
+        <FEMALE_ENFLPSN_CNT>0</FEMALE_ENFLPSN_CNT>
+        <BSNSITE_CIRCUMFR_DIV_NM>주택가주변</BSNSITE_CIRCUMFR_DIV_NM>
+        <SANITTN_INDUTYPE_NM/>
+        <SANITTN_BIZCOND_NM>까페</SANITTN_BIZCOND_NM>
+        <TOT_EMPLY_CNT>0</TOT_EMPLY_CNT>
+        <REFINE_LOTNO_ADDR>경기도 안양시 만안구 석수동 317-6 지상1층</REFINE_LOTNO_ADDR>
+        <REFINE_ROADNM_ADDR>경기도 안양시 만안구 안양로 461 (석수동,지상1층)</REFINE_ROADNM_ADDR>
+        <REFINE_ZIP_CD>13970</REFINE_ZIP_CD>
+        <REFINE_WGS84_LOGT>126.9109068966</REFINE_WGS84_LOGT>
+        <REFINE_WGS84_LAT>37.4109519866</REFINE_WGS84_LAT>
+    </row>
+</Genrestrtcate>
