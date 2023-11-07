@@ -6,13 +6,15 @@ import beforespring.yourfood.app.member.domain.Member;
 import beforespring.yourfood.app.member.domain.MemberRepository;
 import beforespring.yourfood.app.restaurant.domain.Restaurant;
 import beforespring.yourfood.app.restaurant.domain.RestaurantRepository;
+import beforespring.yourfood.app.restaurant.service.dto.ReviewDto;
 import beforespring.yourfood.app.review.domain.Review;
 import beforespring.yourfood.app.review.domain.ReviewRepository;
 import beforespring.yourfood.app.review.exception.MemberMismatchException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -41,5 +43,21 @@ public class ReviewServiceImpl implements ReviewService {
             throw new MemberMismatchException();
         }
         review.updateReview(content, rating);
+    }
+
+    @Override
+    public Page<ReviewDto> getReviewsByRestaurantId(Long restaurantId, Pageable pageable) {
+        Page<Review> reviewsPages = reviewRepository.findReviewsByRestaurantIdPaged(restaurantId, pageable);
+        return reviewsPages.map(
+            review -> new ReviewDto(
+                review.getId(),
+                review.getMember().getId(),
+                review.getRestaurant().getId(),
+                review.getContent(),
+                review.getRating(),
+                review.getCreatedAt(),
+                review.getUpdatedAt()
+            )
+        );
     }
 }

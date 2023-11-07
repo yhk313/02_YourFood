@@ -1,5 +1,9 @@
 package beforespring.yourfood.app.review.service;
 
+import beforespring.yourfood.app.restaurant.service.dto.ReviewDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface ReviewService {
     /**
      * 신규 리뷰 등록
@@ -18,4 +22,12 @@ public interface ReviewService {
      * @param rating 식당 평점
      */
     public void updateReview(Long reviewId, Long memberId, String content, Integer rating);
+
+    /**
+     * 특정 레스토랑의 리뷰
+     * @param restaurantId 레스토랑 id
+     * @param pageable 페이지 처리를 위한 정보
+     * @return 리뷰
+     */
+    Page<ReviewDto> getReviewsByRestaurantId(Long restaurantId, Pageable pageable);
 }
