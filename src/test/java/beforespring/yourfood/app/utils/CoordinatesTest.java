@@ -37,7 +37,7 @@ class CoordinatesTest {
         //given
 
         //when
-        BigDecimal latDiff = origin.getLatDiffByDistance(2000);
+        BigDecimal latDiff = origin.distanceToLatDiff(2000);
         Coordinates nearCoordinates = new Coordinates(origin.getLat().subtract(latDiff), origin.getLon());
         BigInteger distance = origin.calculateDistance(nearCoordinates);
         //then
@@ -45,5 +45,24 @@ class CoordinatesTest {
             .describedAs("좌표 사이의 거리는 2km입니다.");
     }
 
+    @Test
+    @DisplayName("제공된 거리(meter)만큼 더한 lat, lon 좌표 값 반환")
+    void test() {
+        // given
+        BigDecimal givenLat = new BigDecimal("127.09784849516217");
+        BigDecimal givenLon = new BigDecimal("37.528205853832276");
+        Coordinates givenCoords = new Coordinates(givenLat, givenLon);
+        int givenDistance = 1000;
 
+        // when
+        BigDecimal latResult = givenCoords.getLatPlusDistance(givenDistance);
+        BigDecimal lonResult = givenCoords.getLonPlusDistance(givenDistance);
+
+        // then
+        assertThat(latResult)
+            .isEqualTo(Coordinates.distanceToLatDiff(givenDistance).add(givenLat));
+
+        assertThat(lonResult)
+            .isEqualTo(Coordinates.distanceToLonDiff(givenDistance).add(givenLon));
+    }
 }

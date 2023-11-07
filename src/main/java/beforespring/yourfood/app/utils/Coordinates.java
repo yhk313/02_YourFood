@@ -22,6 +22,9 @@ import java.math.MathContext;
 @AllArgsConstructor
 @Getter
 public class Coordinates {
+
+    private static final MathContext mc = new MathContext(11);
+
     @Column(precision = 11, scale = 8, columnDefinition = "DECIMAL(11,8)")
     private BigDecimal lat = BigDecimal.ZERO;
     @Column(precision = 11, scale = 8, columnDefinition = "DECIMAL(11,8)")
@@ -31,6 +34,15 @@ public class Coordinates {
         this.lat = lat;
         this.lon = lon;
     }
+
+    public BigDecimal getLonPlusDistance(int distanceInMeters) {
+        return lon.add(distanceToLonDiff(distanceInMeters));
+    }
+
+    public BigDecimal getLatPlusDistance(int distanceInMeters) {
+        return lat.add(distanceToLatDiff(distanceInMeters));
+    }
+
 
     /**
      * 현재 좌표와 인자의 좌표 사이의 거리를 구함
@@ -61,7 +73,6 @@ public class Coordinates {
         BigDecimal yDis = getMeterPerLatitude(yDiff);
 
         // 피타고리스의 정리로 직선거리 구함
-        MathContext mc = new MathContext(11);
         BigDecimal xDiffSquared = xDis.pow(2);
         BigDecimal yDiffSquared = yDis.pow(2);
         BigDecimal distance = xDiffSquared.add(yDiffSquared).sqrt(mc);
@@ -75,9 +86,7 @@ public class Coordinates {
      * @param distance 거리
      * @return 위도 차이
      */
-    public BigDecimal getLatDiffByDistance(Integer distance) {
-        MathContext mc = new MathContext(11);
-
+    public static BigDecimal distanceToLatDiff(Integer distance) {
         return new BigDecimal((distance.floatValue() / 111000), mc);
     }
 
@@ -87,9 +96,7 @@ public class Coordinates {
      * @param distance 거리
      * @return 경도 차이
      */
-    public BigDecimal getLonDiffByDistance(Integer distance) {
-        MathContext mc = new MathContext(11);
-
+    public static BigDecimal distanceToLonDiff(Integer distance) {
         return new BigDecimal(distance.floatValue() / 90000, mc);
     }
 
@@ -100,9 +107,7 @@ public class Coordinates {
      * @return 환산된 거리
      */
     public static BigDecimal getMeterPerLatitude(BigDecimal latDiff) {
-        MathContext mc = new MathContext(11);
         BigDecimal meterPerLat = new BigDecimal(111000);
-
         return latDiff.multiply(meterPerLat, mc);
     }
 
@@ -113,9 +118,7 @@ public class Coordinates {
      * @return 환산된 거리
      */
     public static BigDecimal getMeterPerLongitude(BigDecimal lonDiff) {
-        MathContext mc = new MathContext(11);
         BigDecimal meterPerLon = new BigDecimal(90000);
-
         return lonDiff.multiply(meterPerLon, mc);
     }
 
