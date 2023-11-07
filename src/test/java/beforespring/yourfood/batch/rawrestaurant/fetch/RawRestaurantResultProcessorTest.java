@@ -1,5 +1,6 @@
 package beforespring.yourfood.batch.rawrestaurant.fetch;
 
+import static beforespring.Fixture.randString;
 import static beforespring.yourfood.batch.BatchFixture.aRawRestaurant;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class RawRestaurantResultProcessorTest {
 
-    RawRestaurantResultProcessor rawRestaurantResultProcessor = new RawRestaurantResultProcessor();
+    RawRestaurantResultProcessor rawRestaurantResultProcessor = new RawRestaurantResultProcessor(randString());
 
     @Test
     @DisplayName("새로운 정보가 들어온 경우")

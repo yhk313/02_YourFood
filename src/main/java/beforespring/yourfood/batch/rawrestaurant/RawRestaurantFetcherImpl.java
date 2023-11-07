@@ -7,7 +7,6 @@ import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +43,8 @@ public class RawRestaurantFetcherImpl implements RawRestaurantFetcher {
                                               .REFINE_LOTNO_ADDR(row.getRefineLotnoAddr())
                                               .REFINE_ROADNM_ADDR(row.getRefineRoadnmAddr())
                                               .REFINE_ZIP_CD(row.getRefineZipCd())
-                                              .REFINE_WGS84_LAT(String.valueOf(new BigDecimal(row.getRefineWgs84Lat())))
-                                              .REFINE_WGS84_LOGT(String.valueOf(new BigDecimal(row.getRefineWgs84Logt())))
+                                              .REFINE_WGS84_LAT(row.getRefineWgs84Lat())
+                                              .REFINE_WGS84_LOGT(row.getRefineWgs84Logt())
                                               .build();
 
             rawRestaurants.add(rawRestaurant);

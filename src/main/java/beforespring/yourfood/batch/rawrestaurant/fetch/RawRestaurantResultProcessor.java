@@ -1,10 +1,17 @@
 package beforespring.yourfood.batch.rawrestaurant.fetch;
 
+import static org.springframework.util.StringUtils.hasText;
+
 import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurant;
 import org.springframework.batch.item.ItemProcessor;
 
 public class RawRestaurantResultProcessor implements
     ItemProcessor<RawRestaurantReaderResult, RawRestaurant> {
+    private final String sido;
+
+    public RawRestaurantResultProcessor(String sido) {
+        this.sido = sido;
+    }
 
     /**
      * DB에서 불러온 기존 값과 API를 통해 불러온 값을 비교하고, 변경사항이 있는 경우 DB에서 불러온 값을 업데이트함.
@@ -19,9 +26,22 @@ public class RawRestaurantResultProcessor implements
         RawRestaurant newlyFetched = item.newlyFetched();
         RawRestaurant existing = item.existing();
 
-        // DB에 데이터가 없으면 새로 불러온 값을 insert
-        if (existing == null) {
-            return newlyFetched;
+        if (!isIdValid(newlyFetched)) {
+            return null;
+        }
+
+        if (!isCoordsValid(newlyFetched)) {
+            return null;
+        }
+
+        // 기존에 DB에 저장되지 않은 상태이고, 현재 영업중인 경우 newlyFetched를 반환.
+        if (newInfo(existing)) {
+            if (isOperating(newlyFetched)) {
+                newlyFetched.setSido(sido);
+                return newlyFetched;
+            } else {
+                return null;
+            }
         }
 
         // DB에 데이터가 있으면 기존 값을 update 후 return.
@@ -34,5 +54,23 @@ public class RawRestaurantResultProcessor implements
 
         // DB에 데이터가 있으나, 변경사항이 없다면 처리하지 않음.
         return null;
+    }
+
+    private static boolean isOperating(RawRestaurant newlyFetched) {
+        return "영업".equals(newlyFetched.getBSN_STATE_NM());
+    }
+
+    private static boolean newInfo(RawRestaurant existing) {
+        return existing == null;
+    }
+
+    private static boolean isCoordsValid(RawRestaurant newlyFetched) {
+        return (hasText(newlyFetched.getREFINE_WGS84_LAT())
+                    && hasText(newlyFetched.getREFINE_WGS84_LOGT()));
+    }
+
+    private static boolean isIdValid(RawRestaurant newlyFetched) {
+        return (hasText(newlyFetched.getRawRestaurantId().getBIZPLC_NM())
+                     && hasText(newlyFetched.getRawRestaurantId().getREFINE_ROADNM_ADDR()));
     }
 }
