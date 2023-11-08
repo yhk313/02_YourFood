@@ -1,11 +1,11 @@
 package beforespring.yourfood.batch.config;
 
+import beforespring.yourfood.app.restaurant.domain.CuisineType;
 import beforespring.yourfood.app.restaurant.domain.Restaurant;
 import beforespring.yourfood.app.restaurant.domain.RestaurantRepository;
-import beforespring.yourfood.batch.rawrestaurant.RawRestaurantFetcherImpl;
+import beforespring.yourfood.batch.rawrestaurant.mapping.OpenApiManagerFactory;
 import beforespring.yourfood.batch.rawrestaurant.RawRestaurantRepository;
 import beforespring.yourfood.batch.rawrestaurant.fetch.RawRestaurantItemWriter;
-import beforespring.yourfood.batch.rawrestaurant.fetch.RawRestaurantPagingItemReader;
 import beforespring.yourfood.batch.rawrestaurant.fetch.RawRestaurantReaderResult;
 import beforespring.yourfood.batch.rawrestaurant.fetch.RawRestaurantResultProcessor;
 import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurant;
@@ -17,7 +17,6 @@ import beforespring.yourfood.batch.rawrestaurant.update.RestaurantUpdateReaderRe
 import beforespring.yourfood.batch.rawrestaurant.update.RestaurantUpdateReaderResult;
 import beforespring.yourfood.batch.scheduler.BatchScheduler;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,46 +46,56 @@ public class BatchConfiguration {
     private final StepBuilderFactory stepBuilderFactory;
     private final RawRestaurantRepository rawRestaurantRepository;
     private final RestaurantRepository restaurantRepository;
-    private final EntityManager em;
-    private final RawRestaurantFetcherImpl rawRestaurantFetcher;
+    private final OpenApiManagerFactory openApiManagerFactory;
     private final JobLauncher jobLauncher;
+    private final EntityManager em;
+
     private final static String SYNC_JOB_NAME = "syncJob";
-    private final static DateTimeFormatter dateTimeFormatter = DateTimeFormatter
-                                                                   .ofPattern("yyyy-MM-dd'T'HH:mm:ss.nnnnnn");
+    private final static String UPDATE_JOB_NAME = "updateJob";
     private final static int CHUNK_SIZE = 500;
 
     @Bean
     public BatchScheduler batchScheduler() {
-        return new BatchScheduler(jobLauncher, restApiSyncJob());
+        return new BatchScheduler(jobLauncher, fetchJob(), updatedJob());
     }
 
     @Bean
-    public Job restApiSyncJob() {
+    public Job fetchJob() {
         return jobBuilderFactory.get(SYNC_JOB_NAME)
-                   .start(fetchRestaurantApi(null, null))
-                   .next(updateRestaurant(null, null))
+                   .start(fetchRawRestaurant(null))
+                   .build();
+    }
+
+    @Bean
+    public Job updatedJob() {
+        return jobBuilderFactory.get(UPDATE_JOB_NAME)
+                   .start(updateRestaurant(null, null))
                    .build();
     }
 
     @Bean
     @JobScope
-    public Step fetchRestaurantApi(
-        @Value("#{jobParameters[requestedAt]}") String requestedAt,
-        @Value("#{jobParameters[customStartParam]}") String customStartParam
+    public Step fetchRawRestaurant(
+        @Value("#{jobParameters[cuisineType]}") String cuisineTypeStr
     ) {
+        CuisineType cuisineType = CuisineType.valueOf(cuisineTypeStr);
         return stepBuilderFactory.get("fetchRawRestaurantFromExternal")
                    .<RawRestaurantReaderResult, RawRestaurant>chunk(CHUNK_SIZE)
-                   .reader(rawRestaurantPagingItemReader())
-                   .processor(rawRestaurantResultProcessor(null, null))
+                   .reader(
+                       fetchReaderFactory()
+                           .create(cuisineType, CHUNK_SIZE)
+                   )
+                   .processor(rawRestaurantResultProcessor())
                    .writer(rawRestaurantItemWriter())
                    .build();
     }
 
     /**
-     * DB에 저장된 RawRestaurant 중, requestedAt 이후에 업데이트된 레코드를 불러오고, 이를 Restaurant에 반영함.
-     * 파라미터는 직접 넣지 않고, JobParameters를 통해 전달됨.
-     * @param requestedAt Job이 시작된 시간. 이 시점 이후에 변경된 데이터만 처리함.
-//     * @param customStartParam 파라미터가 필요 없다면 빈 값을 반환. 빈 값이 아닌 경우에 이 시점 이후에 변경된 데이터를 처리함.
+     * DB에 저장된 RawRestaurant 중, requestedAt 이후에 업데이트된 레코드를 불러오고, 이를 Restaurant에 반영함. 파라미터는 직접 넣지 않고,
+     * JobParameters를 통해 전달됨.
+     *
+     * @param requestedAt      Job이 시작된 시간. 이 시점 이후에 변경된 데이터만 처리함.
+     * @param customStartParam 파라미터가 필요 없다면 빈 값을 반환. 빈 값이 아닌 경우에 이 시점 이후에 변경된 데이터를 처리함.
      * @return Step
      */
     @Bean
@@ -101,10 +110,13 @@ public class BatchConfiguration {
             requestedAtParsed = LocalDateTime.parse(customStartParam).minusMinutes(1);
         }
 
-        log.info("startedAtParsed = {}", requestedAtParsed);
         return stepBuilderFactory.get("updateRestaurantFromRawRestaurant")
                    .<RestaurantUpdateReaderResult, Restaurant>chunk(CHUNK_SIZE)
-                   .reader(new RestaurantUpdateReader(requestedAtParsed, restaurantUpdateReaderRepository()))
+                   .reader(
+                       new RestaurantUpdateReader(
+                           requestedAtParsed,
+                           restaurantUpdateReaderRepository())
+                   )
                    .processor(restaurantUpdateProcessor())
                    .writer(restaurantUpdateDataJpaWriter())
                    .build();
@@ -112,14 +124,9 @@ public class BatchConfiguration {
 
     // todo refactor sido, cuisineType 정보는 fetcher에서 붙여서 반환해야함.
     @Bean
-    @JobScope
-    public RawRestaurantResultProcessor rawRestaurantResultProcessor(
-        @Value("#{jobParameters[sido]}") String sido,
-        @Value("#{jobParameters[cuisineType]}") String cuisineType
-        ) {
-        return new RawRestaurantResultProcessor(sido);
+    public RawRestaurantResultProcessor rawRestaurantResultProcessor() {
+        return new RawRestaurantResultProcessor();
     }
-
 
     @Bean
     public RestaurantUpdateDataJpaWriter restaurantUpdateDataJpaWriter() {
@@ -137,17 +144,13 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public RawRestaurantPagingItemReader rawRestaurantPagingItemReader() {
-        return new RawRestaurantPagingItemReader(
-            rawRestaurantFetcher,
-            rawRestaurantRepository,
-            CHUNK_SIZE
-        );
+    public RawRestaurantPagingItemReaderFactory fetchReaderFactory() {
+        return new RawRestaurantPagingItemReaderFactory(openApiManagerFactory,
+            rawRestaurantRepository);
     }
 
     @Bean
     public RawRestaurantItemWriter rawRestaurantItemWriter() {
         return new RawRestaurantItemWriter(rawRestaurantRepository);
     }
-
 }

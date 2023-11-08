@@ -1,6 +1,5 @@
 package beforespring.yourfood.batch.rawrestaurant.fetch;
 
-import static beforespring.Fixture.randString;
 import static beforespring.yourfood.batch.BatchFixture.aRawRestaurant;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,17 +10,18 @@ import org.junit.jupiter.api.Test;
 
 class RawRestaurantResultProcessorTest {
 
-    RawRestaurantResultProcessor rawRestaurantResultProcessor = new RawRestaurantResultProcessor(randString());
+    RawRestaurantResultProcessor rawRestaurantResultProcessor = new RawRestaurantResultProcessor();
 
     @Test
     @DisplayName("새로운 정보가 들어온 경우")
-    void process_not_existing_new_data() throws Exception {
+    void process_newly_fetched_data() throws Exception {
         // given
         RawRestaurant fetched = aRawRestaurant()
-                                  .build();
+                                    .BIZPLC_NM("상호명")
+                                    .REFINE_ROADNM_ADDR("도로명주소")
+                                    .build();
         RawRestaurant existing = null;
-        RawRestaurantReaderResult given = new RawRestaurantReaderResult(fetched,
-            existing);
+        RawRestaurantReaderResult given = new RawRestaurantReaderResult(fetched, existing);
 
         // when
         RawRestaurant actual = rawRestaurantResultProcessor.process(given);
@@ -37,7 +37,7 @@ class RawRestaurantResultProcessorTest {
         // given
         RawRestaurantBuilder baseBuilder = aRawRestaurant();
         RawRestaurant fetched = baseBuilder
-                                  .build();
+                                    .build();
         RawRestaurant existing = baseBuilder
                                      .id(1L)
                                      .build();
@@ -59,7 +59,7 @@ class RawRestaurantResultProcessorTest {
         RawRestaurantBuilder baseBuilder = aRawRestaurant();
         RawRestaurant fetched = baseBuilder
                                     .GRAD_FACLT_DIV_NM("중요하지 않은 정보가 변경됨")
-                                  .build();
+                                    .build();
         RawRestaurant existing = baseBuilder
                                      .id(1L)
                                      .GRAD_FACLT_DIV_NM("중요하지 않은 정보")
@@ -78,8 +78,8 @@ class RawRestaurantResultProcessorTest {
             .isSameAs(existing)
             .extracting(RawRestaurant::getGRAD_FACLT_DIV_NM)
             .describedAs("변동이 있는 필드를 update하고 반환해야함.")
-                .isNotEqualTo(beforeUpdate)
-                .isEqualTo(fetched.getGRAD_FACLT_DIV_NM())
+            .isNotEqualTo(beforeUpdate)
+            .isEqualTo(fetched.getGRAD_FACLT_DIV_NM())
         ;
     }
 
@@ -90,7 +90,7 @@ class RawRestaurantResultProcessorTest {
         RawRestaurantBuilder baseBuilder = aRawRestaurant();
         RawRestaurant fetched = baseBuilder
                                     .BSN_STATE_NM("폐업")
-                                  .build();
+                                    .build();
         RawRestaurant existing = baseBuilder
                                      .id(1L)
                                      .BSN_STATE_NM("영업")

@@ -15,14 +15,14 @@ class CuisineTypeConverterTest {
     @DisplayName("CuisineType이 정렬되어 문자열에 저장되어야 함")
     void convert_cuisine_type_to_string_test() {
         //given
-        Set<CuisineType> toConvert = Set.of(CuisineType.KOREAN, CuisineType.WESTERN, CuisineType.JAPANESE, CuisineType.CHINESE);
+        Set<CuisineType> toConvert = Set.of(CuisineType.KOREAN, CuisineType.SOUP, CuisineType.JAPANESE, CuisineType.CHINESE);
         //when
         String convertedString = cuisineTypeConverter.convertToDatabaseColumn(toConvert);
 
         //then
         assertThat(convertedString)
             .describedAs("문자열로 변환이 되고 알파벳 순서로 정렬되어야 함")
-            .isEqualTo("CHINESE JAPANESE KOREAN WESTERN");
+            .isEqualTo("CHINESE JAPANESE KOREAN SOUP");
     }
 
     @Test

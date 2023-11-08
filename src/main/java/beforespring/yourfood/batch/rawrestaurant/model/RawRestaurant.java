@@ -1,8 +1,13 @@
 package beforespring.yourfood.batch.rawrestaurant.model;
 
+import beforespring.yourfood.app.restaurant.domain.CuisineType;
+import beforespring.yourfood.app.restaurant.infra.CuisineTypeConverter;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -80,6 +85,18 @@ public class RawRestaurant {
 
     private String sido;
 
+    @Column(name = "cuisine_types")
+    @Convert(converter = CuisineTypeConverter.class)
+    private Set<CuisineType> cuisineTypes = new TreeSet<>();
+
+    /**
+     * @param id 존재하지 않는 경우 외부 API를 통해 새로 불러온 객체로 판단함.
+     * @param hasNonUpdatedInfo true인 경우, 서비스에 필요한 Restaurant에 RawRestaurant의
+     * @param crucialInfoFetchedAt API에서 불러온 값이 DB의 값과 다를 때 발생함.
+     * @param fetchedAt API에서 불러와 DB에 저장한 시간. null일시 현재 시각
+     * @param cuisineType 음식점 종류
+     * @param sido 시, 도 정보(ex. 경기도)
+     */
     @Builder
     public RawRestaurant(
         Long id,
@@ -108,6 +125,7 @@ public class RawRestaurant {
         Boolean hasNonUpdatedInfo,
         LocalDateTime crucialInfoFetchedAt,
         LocalDateTime fetchedAt,
+        CuisineType cuisineType,
         String sido
     ) {
         this.id = id;
@@ -136,15 +154,22 @@ public class RawRestaurant {
         LocalDateTime now = LocalDateTime.now();
 
         this.sido = sido;
-        // null인 경우 외부에서 읽어온 값.
+
+        // null인 경우 외부에서 읽어온 값. 기본값은 false
         if (hasNonUpdatedInfo != null) {
             this.hasNonUpdatedInfo = hasNonUpdatedInfo;
         }
-        // null인 경우 외부에서 읽어온 값.
+
+        // null인 경우 외부에서 읽어온 값임. now로 설정
         this.crucialInfoFetchedAt = crucialInfoFetchedAt == null ? now : crucialInfoFetchedAt;
-        // null인 경우 외부에서 읽어온 값.
+
+        // null인 경우 외부에서 읽어온 값임. now로 설정
         this.fetchedAt = fetchedAt == null ? now : fetchedAt;
 
+        // 생성 시점에는 레스토랑 타입이 하나만 추가됨
+        if (cuisineType != null) {
+            this.cuisineTypes.add(cuisineType);
+        }
     }
 
 
@@ -155,28 +180,24 @@ public class RawRestaurant {
      */
     public void updateDataFrom(RawRestaurant fetched) {
         // id가 일치하지 않는 경우 업데이트 불가
-        if (!this.rawRestaurantId.equals(fetched.getRawRestaurantId())) {
-            throw new IllegalStateException("rawRestaurantId가 일치하지 않음");
-        }
+        this.validateRawRestaurantIdMatches(fetched);
         // 외부 api를 통해 새로 불러온 객체가 아닌, DB에서 가져온 객체만 호출 가능
-        if (this.isNewlyFetched()) {
-            throw new IllegalCallerException("외부에서 새로 불러온 객체가 아닌, DB에서 가져온 객체만 호출 가능");
-        }
-        // 업데이트할 내용이 없는 경우 바로 return
-        if (!this.isOutdatedCompareTo(fetched)) {
+        this.validateExistingEntity();
+
+        updateMiscInfoFrom(fetched);
+        updateCrucialInfoFrom(fetched);
+    }
+
+    private void updateMiscInfoFrom(RawRestaurant fetched) {
+        // 부가 정보가 업데이트 되지 않음.
+        if (!isMiscInfoOutdatedCompareTo(fetched)) {
             return;
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        this.fetchedAt = now;  // fetch 된 시간 업데이트
+        // 변경 시각 갱신
+        this.fetchedAt = fetched.getFetchedAt();
 
-        if (this.isCrucialInfoOutdatedCompareTo(fetched)) {
-            this.hasNonUpdatedInfo = true;
-            this.crucialInfoFetchedAt = now;  // 주요 정보 변경 시각 업데이트
-        }
         this.LICENSG_DE = fetched.getLICENSG_DE();
-        this.BSN_STATE_NM = fetched.getBSN_STATE_NM();
-        this.CLSBIZ_DE = fetched.getCLSBIZ_DE();
         this.LOCPLC_AR = fetched.getLOCPLC_AR();
         this.GRAD_FACLT_DIV_NM = fetched.getGRAD_FACLT_DIV_NM();
         this.MALE_ENFLPSN_CNT = fetched.getMALE_ENFLPSN_CNT();
@@ -190,47 +211,109 @@ public class RawRestaurant {
     }
 
     /**
-     * 이전 RawRestaurant와 비교하여 정보가 변경되었는지 여부. 변경 불가능한 값은 체크하지 않음.
-     *
-     * @param oldData 비교할 대상
-     * @return 업데이트 되었는지 여부
+     * 음식점 종류(cuisineType)에 대해서 List로 구현한 이유는, 하나의 식당이 여러개의 종류에 포함될 수 있다고 판단했기 때문임.
+     * ex) 한식+분식, 일식+복어, 주점+한식 등
      */
-    public boolean isOutdatedCompareTo(RawRestaurant oldData) {
-        // 외부 api를 통해 새로 불러온 객체가 아닌, DB에서 가져온 객체만 호출 가능
+    private void updateCrucialInfoFrom(RawRestaurant fetched) {
+        // 변경된 정보가 없으면 바로 return
+        if (!this.isCrucialInfoOutdatedCompareTo(fetched)) {
+            return;
+        }
+
+        // 반영되지 않은 주요 정보 업데이트 되었다고 표시
+        this.hasNonUpdatedInfo = true;
+
+        // 주요 정보 변경 시각 업데이트
+        this.crucialInfoFetchedAt = fetched.getFetchedAt();
+
+        // 영업 상태, 폐업 일자 업데이트
+        this.BSN_STATE_NM = fetched.getBSN_STATE_NM();
+        this.CLSBIZ_DE = fetched.getCLSBIZ_DE();
+
+        // 음식점 종류 추가
+        this.cuisineTypes.addAll(fetched.getCuisineTypes());
+    }
+
+    private void validateExistingEntity() {
         if (this.isNewlyFetched()) {
             throw new IllegalCallerException("외부에서 새로 불러온 객체가 아닌, DB에서 가져온 객체만 호출 가능");
         }
-        return !(Objects.equals(getRawRestaurantId(), oldData.getRawRestaurantId())
-                     && Objects.equals(getSIGUN_NM(), oldData.getSIGUN_NM())
-                     && Objects.equals(getSIGUN_CD(), oldData.getSIGUN_CD())
-                     && Objects.equals(getLICENSG_DE(), oldData.getLICENSG_DE())
-                     && Objects.equals(getBSN_STATE_NM(), oldData.getBSN_STATE_NM())
-                     && Objects.equals(getCLSBIZ_DE(), oldData.getCLSBIZ_DE())
-                     && Objects.equals(getLOCPLC_AR(), oldData.getLOCPLC_AR())
-                     && Objects.equals(getGRAD_FACLT_DIV_NM(), oldData.getGRAD_FACLT_DIV_NM())
-                     && Objects.equals(getMALE_ENFLPSN_CNT(), oldData.getMALE_ENFLPSN_CNT())
-                     && Objects.equals(getYY(), oldData.getYY()) && Objects.equals(
-            getMULTI_USE_BIZESTBL_YN(), oldData.getMULTI_USE_BIZESTBL_YN()) && Objects.equals(
-            getTOT_FACLT_SCALE(), oldData.getTOT_FACLT_SCALE()) && Objects.equals(
-            getFEMALE_ENFLPSN_CNT(), oldData.getFEMALE_ENFLPSN_CNT()) && Objects.equals(
-            getBSNSITE_CIRCUMFR_DIV_NM(), oldData.getBSNSITE_CIRCUMFR_DIV_NM())
-                     && Objects.equals(getSANITTN_INDUTYPE_NM(), oldData.getSANITTN_INDUTYPE_NM())
-                     && Objects.equals(getSANITTN_BIZCOND_NM(), oldData.getSANITTN_BIZCOND_NM())
-                     && Objects.equals(getTOT_EMPLY_CNT(), oldData.getTOT_EMPLY_CNT()));
+    }
+
+    private void validateRawRestaurantIdMatches(RawRestaurant fetched) {
+        if (!this.rawRestaurantId.equals(fetched.getRawRestaurantId())) {
+            throw new IllegalStateException("rawRestaurantId가 일치하지 않음");
+        }
     }
 
     /**
-     * 서비스에서 필요로 하는 값 중, 변경된 값이 있는지 확인함. 현재 필요한 값은 영업 여부 값 뿐임.
+     * 이전 RawRestaurant와 비교하여 정보가 변경되었는지 여부. 변경 불가능한 값은 체크하지 않음.
+     *
+     * @param newlyFetched 비교할 대상
+     * @return 업데이트 되었는지 여부
+     */
+    public boolean isOutdatedCompareTo(RawRestaurant newlyFetched) {
+        // 외부 api를 통해 새로 불러온 객체가 아닌, DB에서 가져온 객체만 호출 가능
+        this.validateExistingEntity();
+        // RawRestaurantId가 일치하지 않으면
+        this.validateRawRestaurantIdMatches(newlyFetched);
+
+        boolean miscInfoOutdated = isMiscInfoOutdatedCompareTo(newlyFetched);
+        boolean crucialInfoOutdated = isCrucialInfoOutdatedCompareTo(newlyFetched);
+        return miscInfoOutdated || crucialInfoOutdated;
+    }
+
+    /**
+     * 서비스에서 필요로 하는 값 중, 변경된 값이 있는지 확인함. 현재 필요한 값은 영업 여부, 음식점 종류 값.
+     * 값 중 하나라도 변경된 경우 true
      *
      * @param newlyFetched
-     * @return 영업 여부가 변경되었는지.
+     * @return 영업 여부가 변경되었는지, 음식점 종류에 변화가 있는지.
      */
     public boolean isCrucialInfoOutdatedCompareTo(RawRestaurant newlyFetched) {
-        // 외부 api를 통해 새로 불러온 객체가 아닌, DB에서 가져온 객체만 호출 가능
-        if (this.isNewlyFetched()) {
-            throw new IllegalCallerException("외부에서 새로 불러온 객체가 아닌, DB에서 가져온 객체만 호출 가능");
+        // 음식점 종류 변화 여부
+        if (cuisineTypeOutdatedCompareTo(newlyFetched)) {
+            return true;
         }
+        // 영업 상태 변화 여부
+        if (operatingStatusOutdatedCompareTo(newlyFetched)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isMiscInfoOutdatedCompareTo(RawRestaurant newlyFetched) {
+        return !miscInfoMatches(newlyFetched);
+    }
+
+    private boolean miscInfoMatches(RawRestaurant newlyFetched) {
+        return Objects.equals(getSIGUN_NM(), newlyFetched.getSIGUN_NM())
+                   && Objects.equals(getSIGUN_CD(), newlyFetched.getSIGUN_CD())
+                   && Objects.equals(getLICENSG_DE(), newlyFetched.getLICENSG_DE())
+                   && Objects.equals(getCLSBIZ_DE(), newlyFetched.getCLSBIZ_DE())
+                   && Objects.equals(getLOCPLC_AR(), newlyFetched.getLOCPLC_AR())
+                   && Objects.equals(getGRAD_FACLT_DIV_NM(), newlyFetched.getGRAD_FACLT_DIV_NM())
+                   && Objects.equals(getMALE_ENFLPSN_CNT(), newlyFetched.getMALE_ENFLPSN_CNT())
+                   && Objects.equals(getYY(), newlyFetched.getYY())
+                   && Objects.equals(getMULTI_USE_BIZESTBL_YN(),
+            newlyFetched.getMULTI_USE_BIZESTBL_YN())
+                   && Objects.equals(getTOT_FACLT_SCALE(), newlyFetched.getTOT_FACLT_SCALE())
+                   && Objects.equals(getFEMALE_ENFLPSN_CNT(), newlyFetched.getFEMALE_ENFLPSN_CNT())
+                   && Objects.equals(getBSNSITE_CIRCUMFR_DIV_NM(),
+            newlyFetched.getBSNSITE_CIRCUMFR_DIV_NM())
+                   && Objects.equals(getSANITTN_INDUTYPE_NM(),
+            newlyFetched.getSANITTN_INDUTYPE_NM())
+                   && Objects.equals(getSANITTN_BIZCOND_NM(), newlyFetched.getSANITTN_BIZCOND_NM())
+                   && Objects.equals(getTOT_EMPLY_CNT(), newlyFetched.getTOT_EMPLY_CNT());
+    }
+
+    private boolean operatingStatusOutdatedCompareTo(RawRestaurant newlyFetched) {
         return !(Objects.equals(getBSN_STATE_NM(), newlyFetched.getBSN_STATE_NM()));
+    }
+
+    private boolean cuisineTypeOutdatedCompareTo(RawRestaurant newlyFetched) {
+        return !cuisineTypes.containsAll(newlyFetched.getCuisineTypes());
     }
 
     public boolean isNewlyFetched() {

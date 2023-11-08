@@ -27,6 +27,7 @@ public class RestaurantUpdateProcessor implements ItemProcessor<RestaurantUpdate
         RawRestaurant rawRestaurant
     ) {
         restaurant.updateOperating(isOperating(rawRestaurant));
+        restaurant.addCuisineType(rawRestaurant.getCuisineTypes());
         rawRestaurant.markInfoUpdatedToRestaurant();
         return restaurant;
     }
