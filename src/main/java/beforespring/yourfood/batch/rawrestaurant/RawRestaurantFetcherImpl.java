@@ -54,6 +54,8 @@ public class RawRestaurantFetcherImpl implements RawRestaurantFetcher {
                                                                  .REFINE_ZIP_CD(row.getRefineZipCd())
                                                                  .REFINE_WGS84_LAT(row.getRefineWgs84Lat())
                                                                  .REFINE_WGS84_LOGT(row.getRefineWgs84Logt())
+                                                                 .sido("경기도")
+                                                                 .cuisineType(cuisineType)
                                                                  .build())
                                                  .toList();
 

@@ -52,6 +52,7 @@ public class RestaurantUpdateProcessor implements ItemProcessor<RestaurantUpdate
                    .addressCode(new AddressCode(
                        rawRestaurant.getSido(),
                        rawRestaurant.getSIGUN_NM()))
+                   .cuisineType(rawRestaurant.getCuisineTypes())
                    .operating(operating)
                    .description("")  // not null 오류 방지용 초기값. todo 간단 정보 들어가도록 수정
                    .build();

@@ -50,7 +50,7 @@ public class BatchConfiguration {
     private final JobLauncher jobLauncher;
     private final EntityManager em;
 
-    private final static String SYNC_JOB_NAME = "syncJob";
+    private final static String FETCH_JOB_NAME = "fetchJob";
     private final static String UPDATE_JOB_NAME = "updateJob";
     private final static int CHUNK_SIZE = 500;
 
@@ -61,7 +61,7 @@ public class BatchConfiguration {
 
     @Bean
     public Job fetchJob() {
-        return jobBuilderFactory.get(SYNC_JOB_NAME)
+        return jobBuilderFactory.get(FETCH_JOB_NAME)
                    .start(fetchRawRestaurant(null))
                    .build();
     }

@@ -34,15 +34,15 @@ public class BatchScheduler {
     public void runFetchJob() {
         LocalDateTime requestedAt = LocalDateTime.now();
 
-        // fetch job 병렬 실행
+        // fetch job 실행
         Arrays.stream(CuisineType.values())
-            .parallel()
             .forEach(cuisineType -> {
                 try {
                     jobLauncher.run(
                         fetchJob,
                         new JobParametersBuilder()
                             .addString("requestedAt", requestedAt.toString())
+                            .addString("cuisineType", cuisineType.toString())
                             .toJobParameters()
                     );
                 } catch (Exception e) {
