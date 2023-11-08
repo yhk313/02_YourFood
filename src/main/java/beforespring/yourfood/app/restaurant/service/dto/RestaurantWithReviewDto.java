@@ -8,13 +8,14 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 public record RestaurantWithReviewDto(String name,
                                       String address,
                                       String description,
                                       AddressCode addressCode,
                                       Coordinates coordinate,
-                                      CuisineType cuisineType,
+                                      Set<CuisineType> cuisineType,
                                       BigDecimal rating,
                                       boolean operating,
                                       boolean deleted,
