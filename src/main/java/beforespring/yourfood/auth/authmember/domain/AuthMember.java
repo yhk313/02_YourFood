@@ -1,6 +1,7 @@
 package beforespring.yourfood.auth.authmember.domain;
 
 import beforespring.yourfood.auth.authmember.exception.PasswordMismatchException;
+import beforespring.yourfood.auth.authmember.service.exception.ConfirmStateException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -23,6 +24,11 @@ import lombok.NoArgsConstructor;
             name = "idx__auth_member__username",
             columnList = "username",
             unique = true
+        ),
+        @Index(
+            name = "idx__auth_member__your_food_id",
+            columnList = "your_food_id",
+            unique = true
         )
     }
 )
@@ -41,6 +47,8 @@ public class AuthMember {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ConfirmStatus status;
+    @Column(name = "your_food_id")
+    private Long yourFoodId;  // yourFood 서비스의 MemberId.
 
     @Builder
     protected AuthMember(
@@ -56,8 +64,7 @@ public class AuthMember {
     }
 
     /**
-     * 입력받은 rawPassword를 Hasher를 통해 변환했을 때,
-     * 저장된 password와 같은 지 확인하는 메서드
+     * 입력받은 rawPassword를 Hasher를 통해 변환했을 때, 저장된 password와 같은 지 확인하는 메서드
      *
      * @param rawPassword
      * @param hasher
@@ -69,13 +76,13 @@ public class AuthMember {
     }
 
     /**
-     * 입력받은 비밀번호의 유효성을 검사한 후에
-     * 올바르면 업데이트하는 메서드
+     * 입력받은 비밀번호의 유효성을 검사한 후에 올바르면 업데이트하는 메서드
      *
      * @param rawPassword
      * @param hasher
      */
-    public void updatePassword(String rawPassword, PasswordValidator validator, PasswordHasher hasher) {
+    public void updatePassword(String rawPassword, PasswordValidator validator,
+        PasswordHasher hasher) {
         validator.validate(this, rawPassword, hasher);
         this.password = hasher.hash(rawPassword);
     }
@@ -84,7 +91,18 @@ public class AuthMember {
      * 가입 승인 시 상태를 승인으로 변경
      */
     public void joinConfirm() {
-        if (this.status == ConfirmStatus.UNAUTHORIZED)
+        if (this.status == ConfirmStatus.UNAUTHORIZED) {
             this.status = ConfirmStatus.AUTHORIZED;
+        }
+    }
+
+    public void updateYourFoodId(Long yourFoodMemberId) {
+        this.yourFoodId = yourFoodMemberId;
+    }
+
+    public void verifyConfirmState() {
+        if (!this.status.equals(ConfirmStatus.AUTHORIZED)) {
+            throw new ConfirmStateException();
+        }
     }
 }
