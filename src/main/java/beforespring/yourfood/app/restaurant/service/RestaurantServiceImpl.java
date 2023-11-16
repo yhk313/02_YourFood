@@ -1,5 +1,6 @@
 package beforespring.yourfood.app.restaurant.service;
 
+import beforespring.yourfood.app.utils.OrderBy;
 import beforespring.yourfood.app.restaurant.domain.Restaurant;
 import beforespring.yourfood.app.restaurant.domain.RestaurantQueryRepository;
 import beforespring.yourfood.app.restaurant.domain.RestaurantRepository;
@@ -9,9 +10,12 @@ import beforespring.yourfood.app.review.domain.Review;
 import beforespring.yourfood.app.restaurant.service.dto.ReviewDto;
 import beforespring.yourfood.app.review.domain.ReviewRepository;
 import beforespring.yourfood.app.utils.Coordinates;
+import beforespring.yourfood.web.api.restaurant.response.RestaurantDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static beforespring.yourfood.app.utils.RestaurantComparators.byDistance;
 import static beforespring.yourfood.app.utils.RestaurantComparators.byRatingAverage;
@@ -32,19 +36,25 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public List<Restaurant> getRestaurantsByRating(boolean descendingOrder, Coordinates coordinates, int rangeInMeter) {
-        List<Restaurant> restaurantsInLocation = restaurantQueryRepository.findAllWithin(coordinates, rangeInMeter);
-        // 평점순 정렬
-        restaurantsInLocation.sort(byRatingAverage(descendingOrder));
-        return restaurantsInLocation;
-    }
+    public List<RestaurantDto> getRestaurants(OrderBy orderBy, boolean descendingOrder, Coordinates coordinates, int rangeInMeter) {
+        List<Restaurant> restaurantsInLocation = new ArrayList<>(restaurantQueryRepository.findAllWithin(coordinates, rangeInMeter));
 
-    @Override
-    public List<Restaurant> getRestaurantsByDistance(boolean descendingOrder, Coordinates coordinates, int rangeInMeter) {
-        List<Restaurant> restaurantsInLocation = restaurantQueryRepository.findAllWithin(coordinates, rangeInMeter);
-        // 거리순 정렬
-        restaurantsInLocation.sort(byDistance(descendingOrder, coordinates));
-        return restaurantsInLocation;
+        restaurantsInLocation.sort(
+            (orderBy == OrderBy.RATING) ?
+                byRatingAverage(descendingOrder) :
+                byDistance(descendingOrder, coordinates)
+        );
+
+        return restaurantsInLocation.stream()
+            .map(restaurant -> new RestaurantDto(
+                restaurant.getId(),
+                restaurant.getName(),
+                restaurant.getDescription(),
+                restaurant.getAddress(),
+                restaurant.getCuisineType(),
+                restaurant.getRating()
+            ))
+            .collect(Collectors.toList());
     }
 }
 
