@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -24,7 +25,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final RestaurantRepository restaurantRepository;
 
     @Override
-    public void saveReview(Long memberId, Long restaurantId, String content, Integer rating) {
+    public void saveReview(Long restaurantId, Long memberId, String content, Integer rating) {
         Member member = memberRepository.getReferenceById(memberId);
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(RestaurantNotFoundException::new);
         Review review = Review.builder()
@@ -33,6 +34,7 @@ public class ReviewServiceImpl implements ReviewService {
                             .content(content)
                             .rating(rating)
                             .build();
+        restaurant.updateNewReviewRating(review);
         reviewRepository.save(review);
     }
 
@@ -43,6 +45,8 @@ public class ReviewServiceImpl implements ReviewService {
             throw new MemberMismatchException();
         }
         review.updateReview(content, rating);
+        Restaurant restaurant = review.getRestaurant();
+        restaurant.updateModifiedReviewRating(review);
     }
 
     @Override
