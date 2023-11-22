@@ -24,12 +24,10 @@ public class Review {
     private Long id;
 
     @JoinColumn(name = "member_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member member; //추후 memberId만 참조하는 것으로 변경
+    private Long memberId;
 
     @JoinColumn(name = "restaurant_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Restaurant restaurant;
+    private Long restaurantId;
 
     private String content;
 
@@ -49,12 +47,12 @@ public class Review {
 
     @Builder
     public Review(
-        Member member,
-        Restaurant restaurant,
+        Long memberId,
+        Long restaurantId,
         String content,
         Integer rating) {
-        this.member = member;
-        this.restaurant = restaurant;
+        this.memberId = memberId;
+        this.restaurantId = restaurantId;
         this.content = content;
         this.rating = rating;
         this.createdAt = LocalDateTime.now();

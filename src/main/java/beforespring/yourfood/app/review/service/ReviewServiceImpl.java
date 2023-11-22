@@ -1,16 +1,14 @@
 package beforespring.yourfood.app.review.service;
 
-import beforespring.yourfood.app.exception.RestaurantNotFoundException;
 import beforespring.yourfood.app.exception.ReviewNotFoundException;
-import beforespring.yourfood.app.member.domain.Member;
-import beforespring.yourfood.app.member.domain.MemberRepository;
-import beforespring.yourfood.app.restaurant.domain.Restaurant;
-import beforespring.yourfood.app.restaurant.domain.RestaurantRepository;
 import beforespring.yourfood.app.restaurant.service.dto.ReviewDto;
 import beforespring.yourfood.app.review.domain.Review;
 import beforespring.yourfood.app.review.domain.ReviewRepository;
 import beforespring.yourfood.app.review.exception.MemberMismatchException;
+import beforespring.yourfood.app.review.service.event.ReviewCreatedEvent;
+import beforespring.yourfood.app.review.service.event.ReviewUpdatedEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,32 +19,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
-    private final MemberRepository memberRepository;
-    private final RestaurantRepository restaurantRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public void saveReview(Long restaurantId, Long memberId, String content, Integer rating) {
-        Member member = memberRepository.getReferenceById(memberId);
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(RestaurantNotFoundException::new);
         Review review = Review.builder()
-                            .member(member)
-                            .restaurant(restaurant)
+                            .memberId(memberId)
+                            .restaurantId(restaurantId)
                             .content(content)
                             .rating(rating)
                             .build();
-        restaurant.updateNewReviewRating(review);
+        applicationEventPublisher.publishEvent(new ReviewCreatedEvent(restaurantId, rating));
         reviewRepository.save(review);
     }
 
     @Override
     public void updateReview(Long reviewId, Long memberId, String content, Integer rating) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
-        if (!memberId.equals(review.getMember().getId())) {
+        if (!memberId.equals(review.getMemberId())) {
             throw new MemberMismatchException();
         }
         review.updateReview(content, rating);
-        Restaurant restaurant = review.getRestaurant();
-        restaurant.updateModifiedReviewRating(review);
+        applicationEventPublisher.publishEvent(new ReviewUpdatedEvent(review.getRestaurantId(), review.getRating(), review.getBeforeRating()));
     }
 
     @Override
@@ -55,8 +49,8 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewsPages.map(
             review -> new ReviewDto(
                 review.getId(),
-                review.getMember().getId(),
-                review.getRestaurant().getId(),
+                review.getMemberId(),
+                review.getRestaurantId(),
                 review.getContent(),
                 review.getRating(),
                 review.getCreatedAt(),

@@ -43,8 +43,8 @@ class RestaurantServiceImplTest {
         when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.of(restaurant));
 
         List<Review> reviews = new ArrayList<>();
-        reviews.add(Review.builder().restaurant(restaurant).content("내용1").member(member).rating(4).build());
-        reviews.add(Review.builder().restaurant(restaurant).content("내용2").member(member).rating(5).build());
+        reviews.add(Review.builder().restaurantId(restaurantId).content("내용1").memberId(member.getId()).rating(4).build());
+        reviews.add(Review.builder().restaurantId(restaurantId).content("내용2").memberId(member.getId()).rating(5).build());
         when(reviewRepository.findByRestaurantId(restaurantId)).thenReturn(reviews);
 
         RestaurantWithReviewDto result = restaurantService.getRestaurantDetail(restaurantId);

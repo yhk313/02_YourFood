@@ -125,58 +125,19 @@ public class Restaurant {
     }
 
     /**
-     * 새로운 리뷰 중 반영되지 않은 평점을 업데이트 함.
-     *
-     * @param reviews 새로운 리뷰 List
-     */
-    public void updateNewReviewRatings(List<Review> reviews) {
-        int ratingSum = reviews.stream()
-                            .map(Review::getRating)
-                            .reduce(0, Integer::sum);
-
-        this.rating = this.rating
-                          .multiply(new BigDecimal(this.updatedRatingNum))
-                          .add(new BigDecimal(ratingSum))
-                          .divide(new BigDecimal(this.updatedRatingNum + reviews.size()), RoundingMode.HALF_UP)
-                          .setScale(5, RoundingMode.HALF_UP);
-        this.updatedRatingNum += reviews.size();
-        this.ratingUpdatedAt = LocalDateTime.now();
-    }
-
-    /**
-     * 수정된 리뷰 중 반영되지 않은 평점을 업데이트 함
-     *
-     * @param reviews 수정된 리뷰 List
-     */
-    public void updateModifiedReviewRatings(List<Review> reviews) {
-        int beforeRatingSum = reviews.stream()
-                                  .map(Review::getBeforeRating)
-                                  .reduce(0, Integer::sum);
-        int ratingSum = reviews.stream()
-                            .map(Review::getRating)
-                            .reduce(0, Integer::sum);
-
-        this.rating = this.rating
-                          .multiply(new BigDecimal(this.updatedRatingNum))
-                          .add(new BigDecimal(ratingSum - beforeRatingSum))
-                          .divide(new BigDecimal(this.updatedRatingNum), RoundingMode.HALF_UP)
-                          .setScale(5, RoundingMode.HALF_UP);
-        this.ratingUpdatedAt = LocalDateTime.now();
-    }
-
-    /**
      * 수정된 리뷰의 평점을 반영함.
      * 리뷰가 100개 초과되면 즉각 반영하지 않음.
      *
-     * @param review 수정된 리뷰
+     * @param beforeRating 수정 전 리뷰 평점
+     * @param rating       수정된 리뷰 평점
      */
-    public void updateModifiedReviewRating(Review review) {
+    public void updateModifiedReviewRating(BigDecimal beforeRating, BigDecimal rating) {
         if (this.updatedRatingNum >= 100)
             return;
         this.rating = this.rating
-                          .multiply(new BigDecimal(this.updatedRatingNum))
-                          .add(new BigDecimal(review.getRating() - review.getBeforeRating()))
-                          .divide(new BigDecimal(this.updatedRatingNum), RoundingMode.HALF_UP)
+                          .multiply(BigDecimal.valueOf(this.updatedRatingNum))
+                          .add(rating.subtract(beforeRating))
+                          .divide(BigDecimal.valueOf(this.updatedRatingNum), RoundingMode.HALF_UP)
                           .setScale(5, RoundingMode.HALF_UP);
         this.ratingUpdatedAt = LocalDateTime.now();
     }
@@ -185,14 +146,14 @@ public class Restaurant {
      * 새로운 리뷰의 평점을 반영함.
      * 리뷰가 100개 초과되면 즉각 반영하지 않음.
      *
-     * @param review 새로운 리뷰
+     * @param rating 리뷰 평점
      */
-    public void updateNewReviewRating(Review review) {
+    public void updateNewReviewRating(BigDecimal rating) {
         if (this.updatedRatingNum >= 100)
             return;
         this.rating = this.rating
                           .multiply(BigDecimal.valueOf(this.updatedRatingNum).setScale(5))
-                          .add(BigDecimal.valueOf(review.getRating()).setScale(5))
+                          .add(rating)
                           .divide(BigDecimal.valueOf(++this.updatedRatingNum).setScale(5), RoundingMode.HALF_UP)
                           .setScale(5, RoundingMode.HALF_UP);
         this.ratingUpdatedAt = LocalDateTime.now();

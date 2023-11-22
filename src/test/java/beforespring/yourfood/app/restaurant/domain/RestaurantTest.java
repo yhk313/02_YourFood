@@ -42,7 +42,7 @@ public class RestaurantTest {
 
         //when
         when(mockReview.getRating()).thenReturn(5);
-        restaurant.updateNewReviewRating(mockReview);
+        restaurant.updateNewReviewRating(BigDecimal.valueOf(mockReview.getRating()).setScale(5, RoundingMode.HALF_UP) );
         BigDecimal resultRating = restaurant.getRating();
 
         //then
@@ -68,7 +68,7 @@ public class RestaurantTest {
 
         //when
         for (Review review : mockReviews) {
-            restaurant.updateNewReviewRating(review);
+            restaurant.updateNewReviewRating(BigDecimal.valueOf(review.getRating()).setScale(5, RoundingMode.HALF_UP));
         }
         BigDecimal resultRating = restaurant.getRating();
 
@@ -87,7 +87,7 @@ public class RestaurantTest {
         //given
         List<Review> mockReviews = initNewReviews(6);
         for (Review mockReview : mockReviews) {
-            restaurant.updateNewReviewRating(mockReview);
+            restaurant.updateNewReviewRating(BigDecimal.valueOf(mockReview.getRating()).setScale(5, RoundingMode.HALF_UP));
         }
         BigDecimal beforeRating = restaurant.getRating();
         Integer beforeRatingNum = restaurant.getUpdatedRatingNum();
@@ -97,7 +97,7 @@ public class RestaurantTest {
         //when
         when(modifiedMockReview.getRating()).thenReturn(5);
         when(modifiedMockReview.getBeforeRating()).thenReturn(0);
-        restaurant.updateModifiedReviewRating(modifiedMockReview);
+        restaurant.updateModifiedReviewRating(BigDecimal.valueOf(modifiedMockReview.getBeforeRating()), BigDecimal.valueOf(modifiedMockReview.getRating()));
         BigDecimal afterRating = restaurant.getRating();
         Integer afterRatingNum = restaurant.getUpdatedRatingNum();
 
@@ -118,14 +118,14 @@ public class RestaurantTest {
         //given
         List<Review> mockReviews = initNewReviews(100);
         for (Review mockReview : mockReviews) {
-            restaurant.updateNewReviewRating(mockReview);
+            restaurant.updateNewReviewRating(BigDecimal.valueOf(mockReview.getRating()));
         }
         BigDecimal beforeRating = restaurant.getRating();
         List<Review> modifiedMockReviews = initModifiedReviews(5);
 
         //when
         for (Review modifiedMockReview : modifiedMockReviews) {
-            restaurant.updateModifiedReviewRating(modifiedMockReview);
+            restaurant.updateModifiedReviewRating(BigDecimal.valueOf(modifiedMockReview.getBeforeRating()), BigDecimal.valueOf(modifiedMockReview.getRating()));
         }
         BigDecimal afterRating = restaurant.getRating();
 
