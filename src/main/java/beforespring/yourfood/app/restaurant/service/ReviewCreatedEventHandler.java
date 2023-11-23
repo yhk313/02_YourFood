@@ -3,7 +3,7 @@ package beforespring.yourfood.app.restaurant.service;
 import beforespring.yourfood.app.exception.RestaurantNotFoundException;
 import beforespring.yourfood.app.restaurant.domain.Restaurant;
 import beforespring.yourfood.app.restaurant.domain.RestaurantRepository;
-import beforespring.yourfood.app.review.service.event.ReviewCreatedEvent;
+import beforespring.yourfood.app.review.domain.event.ReviewCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 
