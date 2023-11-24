@@ -33,7 +33,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void updateReview(Long reviewId, Long memberId, String content, Integer rating) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
-        review.updateReview(content, rating, publisher);
+        review.updateReview(memberId ,content, rating, publisher);
     }
 
     @Override

@@ -3,6 +3,7 @@ package beforespring.yourfood.app.review.domain;
 import beforespring.yourfood.app.review.domain.event.ReviewCreatedEvent;
 import beforespring.yourfood.app.review.domain.event.ReviewUpdatedEvent;
 import beforespring.yourfood.app.review.exception.MemberMismatchException;
+import beforespring.yourfood.app.review.exception.ReviewRatingRangeException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,6 +54,7 @@ public class Review {
         Long restaurantId,
         String content,
         Integer rating) {
+        validateRatingRange(rating);
         this.memberId = memberId;
         this.restaurantId = restaurantId;
         this.content = content;
@@ -67,8 +69,9 @@ public class Review {
      * @param content 수정할 내용
      * @param rating  수정할 평점
      */
-    public void updateReview(String content, Integer rating, ApplicationEventPublisher publisher) {
+    public void updateReview(Long memberId, String content, Integer rating, ApplicationEventPublisher publisher) {
         validateMemberId(memberId);
+        validateRatingRange(rating);
         this.content = content;
         this.beforeRating = this.rating;
         this.rating = rating;
@@ -92,5 +95,16 @@ public class Review {
         if (!this.memberId.equals(memberId)) {
             throw new MemberMismatchException();
         }
+    }
+
+    //todo rating을 별도의 클래스로 분리하여 검증 수행, Integer와 BigDecimal 변환 메서드를 추가
+    /**
+     * 평점의 번위가 1 ~ 5 사이의 값인지 확인함
+     *
+     * @param rating 식당 리뷰 평점
+     */
+    public void validateRatingRange(Integer rating) {
+        if (rating < 1 || rating > 5)
+            throw new ReviewRatingRangeException();
     }
 }
