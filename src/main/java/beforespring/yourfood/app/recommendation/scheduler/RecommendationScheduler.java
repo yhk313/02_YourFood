@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 public class RecommendationScheduler {
     private final RecommendationJobLauncher recommendationJobLauncher;
 
-    @Scheduled
     @SneakyThrows
     @Scheduled(cron = "${beforespring.schedules.lunch}")
     public void trigger() {

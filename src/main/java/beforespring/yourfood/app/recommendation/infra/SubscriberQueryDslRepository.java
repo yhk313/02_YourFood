@@ -37,7 +37,7 @@ public class SubscriberQueryDslRepository implements SubscriberRepository {
     @Override
     public List<Subscriber> findSubscriberList(LocalDateTime consentDateBefore, Pageable pageable) {
         return queryFactory
-                .select(new QSubscriber(member.id, member.username, member.coordinates))
+                .select(new QSubscriber(member.id, member.username, member.lunchNotiStatus, member.coordinates))
                 .from(member)
                 .where(member.notiAgreedAt.before(consentDateBefore))
                 .orderBy(member.notiAgreedAt.desc())
