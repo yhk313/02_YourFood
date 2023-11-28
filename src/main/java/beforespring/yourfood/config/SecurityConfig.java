@@ -3,6 +3,7 @@ package beforespring.yourfood.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import beforespring.yourfood.auth.security.YourFoodJwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configurers.SessionMan
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -38,6 +40,7 @@ public class SecurityConfig {
             .csrf(csrfCustomizer())
             .cors(conf -> conf.configure(httpSecurity))
             .oauth2ResourceServer(oauth2ResourceServerCustomizer())
+            .addFilterAfter(new YourFoodJwtFilter(), BearerTokenAuthenticationFilter.class)
         ;
 
         return httpSecurity.build();
