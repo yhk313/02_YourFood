@@ -3,8 +3,10 @@ package beforespring.yourfood.app.review.service;
 import beforespring.yourfood.app.exception.ReviewNotFoundException;
 import beforespring.yourfood.app.restaurant.service.dto.ReviewDto;
 import beforespring.yourfood.app.review.domain.Review;
+import beforespring.yourfood.app.review.domain.ReviewQueryRepository;
 import beforespring.yourfood.app.review.domain.ReviewRepository;
 import beforespring.yourfood.app.review.exception.MemberMismatchException;
+import beforespring.yourfood.app.utils.OrderBy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final ApplicationEventPublisher publisher;
+    private final ReviewQueryRepository reviewQueryRepository;
 
     @Override
     public void saveReview(Long restaurantId, Long memberId, String content, Integer rating) {
@@ -37,18 +40,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Page<ReviewDto> getReviewsByRestaurantId(Long restaurantId, Pageable pageable) {
-        Page<Review> reviewsPages = reviewRepository.findReviewsByRestaurantIdPaged(restaurantId, pageable);
-        return reviewsPages.map(
-            review -> new ReviewDto(
-                review.getId(),
-                review.getMemberId(),
-                review.getRestaurantId(),
-                review.getContent(),
-                review.getRating(),
-                review.getCreatedAt(),
-                review.getUpdatedAt()
-            )
-        );
+    public Page<ReviewDto> findReviewsByRestaurantIdOrderBy(boolean desc, OrderBy orderBy, Long restaurantId, Pageable pageable) {
+        return reviewQueryRepository.findReviewsByRestaurantIdOrderBy(desc, orderBy, restaurantId, pageable)
+            .map(ReviewDto::fromReview);
     }
 }

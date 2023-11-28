@@ -1,6 +1,7 @@
 package beforespring.yourfood.app.review.service;
 
 import beforespring.yourfood.app.restaurant.service.dto.ReviewDto;
+import beforespring.yourfood.app.utils.OrderBy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -26,11 +27,13 @@ public interface ReviewService {
     public void updateReview(Long reviewId, Long memberId, String content, Integer rating);
 
     /**
-     * 특정 레스토랑의 리뷰
+     * 특정 레스토랑의 리뷰 목록 조회
      *
-     * @param restaurantId 레스토랑 id
-     * @param pageable     페이지 처리를 위한 정보
-     * @return 리뷰
+     * @param desc         정렬 내림차순 여부
+     * @param orderBy      정렬기준
+     * @param restaurantId 레스토랑의 ID
+     * @param pageable     페이지네이션 정보
+     * @return 페이지네이션된 ReviewDto 목록
      */
-    Page<ReviewDto> getReviewsByRestaurantId(Long restaurantId, Pageable pageable);
+    Page<ReviewDto> findReviewsByRestaurantIdOrderBy(boolean desc, OrderBy orderBy, Long restaurantId, Pageable pageable);
 }

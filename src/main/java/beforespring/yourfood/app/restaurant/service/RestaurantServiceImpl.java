@@ -35,7 +35,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantWithReviewDto getRestaurantDetail(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(RestaurantNotFoundException::new);
         List<Review> reviews = reviewRepository.findByRestaurantId(restaurantId);
-        List<ReviewDto> reviewDtos = ReviewDto.mapReviewsToReviewDtos(reviews);
+        List<ReviewDto> reviewDtos = reviews.stream().map(ReviewDto::fromReview).collect(Collectors.toList());
 
         return RestaurantWithReviewDto.createFrom(restaurant, reviewDtos);
     }

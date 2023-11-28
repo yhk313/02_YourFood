@@ -1,5 +1,6 @@
 package beforespring.yourfood.web.api.review;
 
+import beforespring.yourfood.app.utils.OrderBy;
 import beforespring.yourfood.web.api.common.GenericResponse;
 import beforespring.yourfood.web.api.review.request.ReviewCreateRequest;
 import beforespring.yourfood.web.api.review.request.ReviewUpdateRequest;
@@ -7,6 +8,7 @@ import beforespring.yourfood.app.restaurant.service.dto.ReviewDto;
 import beforespring.yourfood.app.review.service.ReviewService;
 import beforespring.yourfood.web.api.common.PageResponse;
 import beforespring.yourfood.web.api.review.response.ReviewResponse;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -45,21 +47,29 @@ public class ReviewController {
         return null;
     }
 
-    @GetMapping("restaurant/{restaurantId}")
-    public GenericResponse<PageResponse<ReviewDto>> getReviewsByRestaurantId(
-        @PathVariable Long restaurantId,
-        @RequestParam(defaultValue = "1") int page, // 페이지 번호
-        @RequestParam(defaultValue = "5") int size // 페이지 크기
+
+    /**
+     * 특정 레스토랑에 대한 리뷰 목록을 페이징하여 조회
+     *
+     * @param desc         정렬을 내림차순으로 할지 여부. 기본값은 false
+     * @param orderBy      정렬 기준
+     * @param restaurantId 레스토랑의 ID
+     * @param pageable     페이지 크기
+     * @return 리뷰 목록
+     */
+    @GetMapping("")
+    public GenericResponse<PageResponse<ReviewDto>> findReviewsByRestaurantIdOrderBy(
+        @RequestParam(value = "desc", required = false, defaultValue = "false") boolean desc,
+        @RequestParam(value = "orderBy", required = false) OrderBy orderBy,
+        @RequestParam("restaurantId") Long restaurantId,
+        @PageableDefault(size = 5) Pageable pageable
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ReviewDto> reviews = reviewService.getReviewsByRestaurantId(restaurantId, pageable);
+        Page<ReviewDto> reviewPage = reviewService.findReviewsByRestaurantIdOrderBy(desc, orderBy, restaurantId, pageable);
         PageResponse<ReviewDto> pageResponse = PageResponse.<ReviewDto>builder()
-            .page(reviews.getNumber())
-            .size(reviews.getSize())
-            .totalPages(reviews.getTotalPages())
-            .totalElements(reviews.getTotalElements())
-            .contents(reviews.getContent())
-            .build();
+            .contents(reviewPage.getContent())
+            .page(reviewPage.getNumber())
+            .size(reviewPage.getSize())
+            .totalElements(reviewPage.getTotalElements()).build();
 
         return GenericResponse.<PageResponse<ReviewDto>>builder()
             .statusCode(200)
@@ -67,5 +77,7 @@ public class ReviewController {
             .message("Success")
             .build();
     }
+
+
 
 }

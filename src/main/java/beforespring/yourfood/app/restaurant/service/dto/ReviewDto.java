@@ -20,17 +20,15 @@ public record ReviewDto(Long id,
     public ReviewDto {
     }
 
-    public static List<ReviewDto> mapReviewsToReviewDtos(List<Review> reviews) {
-        return reviews.stream()
-            .map(review -> ReviewDto.builder()
-                .id(review.getId())
-                .memberId(review.getMemberId())
-                .restaurantId(review.getRestaurantId())
-                .content(review.getContent())
-                .rating(review.getRating())
-                .createdAt(review.getCreatedAt())
-                .updatedAt(review.getUpdatedAt())
-                .build())
-            .collect(Collectors.toList());
+    public static ReviewDto fromReview(Review review) {
+        return ReviewDto.builder()
+            .id(review.getId())
+            .memberId(review.getMemberId())
+            .restaurantId(review.getRestaurantId())
+            .content(review.getContent())
+            .rating(review.getRating())
+            .createdAt(review.getCreatedAt())
+            .updatedAt(review.getUpdatedAt())
+            .build();
     }
 }
