@@ -1,5 +1,6 @@
-package beforespring.yourfood.batch.rawrestaurant;
+package beforespring.yourfood.batch.rawrestaurant.fetch.fetcherimplement;
 
+import beforespring.yourfood.batch.rawrestaurant.fetch.RawRestaurantFetchResult;
 import org.junit.jupiter.api.Test;
 
 class DummyRawRestaurantFetcherTest {

@@ -1,4 +1,4 @@
-package beforespring.yourfood.batch.rawrestaurant;
+package beforespring.yourfood.batch.rawrestaurant.fetch;
 
 import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurant;
 import java.util.List;

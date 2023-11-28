@@ -2,6 +2,8 @@ package beforespring.yourfood.batch.rawrestaurant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import beforespring.yourfood.batch.rawrestaurant.fetch.fetcherimplement.DummyRawRestaurantFetcher;
+import beforespring.yourfood.batch.rawrestaurant.fetch.RawRestaurantFetchResult;
 import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurant;
 import java.util.List;
 import javax.persistence.EntityManager;

@@ -1,5 +1,7 @@
-package beforespring.yourfood.batch.rawrestaurant;
+package beforespring.yourfood.batch.rawrestaurant.fetch.fetcherimplement;
 
+import beforespring.yourfood.batch.rawrestaurant.fetch.RawRestaurantFetchResult;
+import beforespring.yourfood.batch.rawrestaurant.fetch.RawRestaurantFetcher;
 import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurant;
 import java.time.LocalDate;
 import java.util.List;

@@ -1,8 +1,8 @@
 //package beforespring.yourfood.batch.rawrestaurant.mapping;
 //
 //import beforespring.yourfood.app.restaurant.domain.CuisineType;
-//import beforespring.yourfood.batch.rawrestaurant.mapping.exception.MapperProcessingException;
-//import beforespring.yourfood.config.ApiConfig;
+//import beforespring.yourfood.batch.rawrestaurant.exception.MapperProcessingException;
+//import beforespring.yourfood.batch.config.ApiConfig;
 //import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;

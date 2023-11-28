@@ -1,4 +1,4 @@
-package beforespring.yourfood.batch.rawrestaurant.mapping;
+package beforespring.yourfood.batch.rawrestaurant.fetch.fetcherimplement.gyeonggi.xmlmapper;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;

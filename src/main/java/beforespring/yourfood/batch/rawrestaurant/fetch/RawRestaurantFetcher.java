@@ -1,4 +1,4 @@
-package beforespring.yourfood.batch.rawrestaurant;
+package beforespring.yourfood.batch.rawrestaurant.fetch;
 
 /**
  * 페이지 기반으로 최신 음식점 정보를 가져오는 책임을 추상화한 클래스.

@@ -1,7 +1,7 @@
-package beforespring.yourfood.config;
+package beforespring.yourfood.batch.config;
 
 import beforespring.yourfood.app.restaurant.domain.CuisineType;
-import beforespring.yourfood.batch.rawrestaurant.mapping.OpenApiManagerFactory;
+import beforespring.yourfood.batch.rawrestaurant.fetch.fetcherimplement.gyeonggi.GyeonggiOpenApiManagerFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-public class ApiConfig {
+public class GyeonggiOpenApiConfig {
 
     @Value("${developer.api.key}")
     private String developerApiKey;
@@ -23,7 +23,7 @@ public class ApiConfig {
     }
 
     @Bean
-    public OpenApiManagerFactory openApiManagerFactory() {
+    public GyeonggiOpenApiManagerFactory openApiManagerFactory() {
         Map<CuisineType, String> cuisineTypeUriMap = new HashMap<>();
         cuisineTypeUriMap.put(CuisineType.KOREAN, "/Genrestrtlunch");
         cuisineTypeUriMap.put(CuisineType.CAFE, "/Genrestrtcate");
@@ -35,7 +35,7 @@ public class ApiConfig {
         cuisineTypeUriMap.put(CuisineType.JAPANESE, "/Genrestrtjpnfood");
         cuisineTypeUriMap.put(CuisineType.SOUP, "/Genrestrtsoup");
 
-        return new OpenApiManagerFactory(
+        return new GyeonggiOpenApiManagerFactory(
             cuisineTypeUriMap,
             new RestTemplate(),
             xmlMapper(),

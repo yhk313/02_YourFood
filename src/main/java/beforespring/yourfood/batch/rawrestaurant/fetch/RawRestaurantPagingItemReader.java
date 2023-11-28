@@ -1,7 +1,5 @@
 package beforespring.yourfood.batch.rawrestaurant.fetch;
 
-import beforespring.yourfood.batch.rawrestaurant.RawRestaurantFetchResult;
-import beforespring.yourfood.batch.rawrestaurant.RawRestaurantFetcher;
 import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurant;
 import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurantId;
 import beforespring.yourfood.batch.rawrestaurant.RawRestaurantRepository;

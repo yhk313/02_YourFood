@@ -1,10 +1,10 @@
-package beforespring.yourfood.batch.rawrestaurant;
+package beforespring.yourfood.batch.rawrestaurant.fetch;
 
 import static beforespring.Fixture.random;
 import static org.assertj.core.api.Assertions.*;
 
+import beforespring.yourfood.batch.rawrestaurant.RawRestaurantRepository;
 import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurant;
-import beforespring.yourfood.batch.rawrestaurant.fetch.RawRestaurantItemWriter;
 import beforespring.yourfood.batch.rawrestaurant.model.RawRestaurantId;
 import java.time.LocalDate;
 import java.util.List;
