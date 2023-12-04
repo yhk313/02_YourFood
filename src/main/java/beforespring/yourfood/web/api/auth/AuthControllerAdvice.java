@@ -1,5 +1,6 @@
 package beforespring.yourfood.web.api.auth;
 
+import beforespring.yourfood.auth.authmember.exception.TokenMismatchException;
 import beforespring.yourfood.auth.authmember.service.exception.AuthMemberNotFoundException;
 import beforespring.yourfood.auth.authmember.service.exception.ConfirmNotFoundException;
 import beforespring.yourfood.web.api.common.ErrorResponse;
@@ -25,4 +26,10 @@ public class AuthControllerAdvice {
         return new ErrorResponse<>(StatusCode.NOT_FOUND, e.getMessage(), request.getRequestURI());
     }
 
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(TokenMismatchException.class)
+    public ErrorResponse<String> handleTokenMismatchException(TokenMismatchException e, HttpServletRequest request) {
+        return new ErrorResponse<>(StatusCode.NOT_FOUND, e.getMessage(), request.getRequestURI());
     }
+
+}
