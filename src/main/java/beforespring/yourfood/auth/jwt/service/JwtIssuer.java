@@ -4,8 +4,7 @@ package beforespring.yourfood.auth.jwt.service;
 import beforespring.yourfood.auth.jwt.domain.AuthToken;
 
 public interface JwtIssuer {
-
-    AuthToken issue(Long memberId, String memberName);
+    AuthToken issue(Long memberId, String memberName, Long serviceMemberId);
 
     /**
      * Redis key value storage 를 그대로 신뢰했다가 세션 정보가 꼬여서 다른 사용자 정보가 나오는 식으로 오동작한 사례들이 있음. 최소한의 인증을 위해
@@ -15,6 +14,5 @@ public interface JwtIssuer {
      * @param memberName
      * @return AuthToken, accessToken, refreshToken의 값이 모두 갱신됨.
      */
-    AuthToken renew(String refreshToken, String memberName);
-
+    AuthToken renew(String refreshToken, String memberName, Long serviceMemberId);
 }

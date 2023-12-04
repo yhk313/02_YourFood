@@ -17,7 +17,7 @@ public class AccessTokenGeneratorImpl implements AccessTokenGenerator {
     private final JwtEncoder jwtEncoder;
 
     @Override
-    public String generate(Long memberId, String username) {
+    public String generate(Long authMemberId, String username, Long serviceMemberId) {
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                                      .issuer(jwtProperties.getIssuer())
                                      .issuedAt(Instant.now())
@@ -26,8 +26,9 @@ public class AccessTokenGeneratorImpl implements AccessTokenGenerator {
                                              .plusSeconds(jwtProperties.getAccessTokenLifespanInMinutes() * 60)
                                      )
                                      .subject(jwtProperties.getSubject())
-                                     .claim("memberId", memberId.toString())
+                                     .claim("memberId", serviceMemberId)
                                      .claim("username", username)
+                                     .claim("authId", authMemberId)
                                      .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
     }

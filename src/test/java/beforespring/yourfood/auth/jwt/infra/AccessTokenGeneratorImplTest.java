@@ -25,7 +25,8 @@ class AccessTokenGeneratorImplTest {
 
     AccessTokenGeneratorImpl accessTokenGenerator;
 
-    Long givenId;
+    Long givenAuthId;
+    Long givenServiceId;
     String givenName;
 
     @BeforeEach
@@ -40,26 +41,30 @@ class AccessTokenGeneratorImplTest {
                             .accessTokenLifespanInMinutes(random.nextInt(180, 1800))
                             .build();
         accessTokenGenerator = new AccessTokenGeneratorImpl(jwtProperties, jwtEncoder);
-        givenId = randomPositiveLong();
+        givenAuthId = randomPositiveLong();
+        givenServiceId = randomPositiveLong();
         givenName = randString();
     }
 
     @Test
     void generate() {
         // when
-        String s = accessTokenGenerator.generate(givenId, givenName);
+        String s = accessTokenGenerator.generate(givenAuthId, givenName, givenServiceId);
 
         // then
         Jwt decoded = jwtDecoder.decode(s);
         Map<String, Object> claims = decoded.getClaims();
-        String memberId = (String) claims.get("memberId");
-        String name = (String) claims.get("username");
+        String authMemberId = claims.get("authId").toString();
+        String memberId = claims.get("memberId").toString();
+        String name = claims.get("username").toString();
         String issuer = (String) claims.get("iss");
         String subject = decoded.getSubject();
 
         // jwt payload 체크
+        assertThat(authMemberId)
+            .isEqualTo(givenAuthId.toString());
         assertThat(memberId)
-            .isEqualTo(givenId.toString());
+            .isEqualTo(givenServiceId.toString());
         assertThat(name)
             .isEqualTo(givenName);
 

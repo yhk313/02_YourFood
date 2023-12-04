@@ -29,7 +29,8 @@ class JwtIssuerImplTest {
     @Mock
     RefreshTokenManager refreshTokenManager;
 
-    Long givenMemberId;
+    Long givenAuthMemberId;
+    Long givenServiceMemberId;
     String givenUsername;
     String expectingAccessToken;
     String expectingRefreshToken;
@@ -37,9 +38,10 @@ class JwtIssuerImplTest {
 
     @BeforeEach
     void init() {
-        givenMemberId = Fixture.randomPositiveLong();
+        givenAuthMemberId = Fixture.randomPositiveLong();
+        givenServiceMemberId = Fixture.randomPositiveLong();
         givenUsername = randString();
-        expectingAccessToken = givenUsername + givenMemberId.toString();
+        expectingAccessToken = givenUsername + givenAuthMemberId.toString();
         expectingRefreshToken = UUID.randomUUID().toString();
         jwtIssuer = new JwtIssuerImpl(accessTokenGenerator, refreshTokenManager);
     }
@@ -48,14 +50,14 @@ class JwtIssuerImplTest {
     @Test
     void issue() {
         // given
-        given(accessTokenGenerator.generate(givenMemberId, givenUsername))
+        given(accessTokenGenerator.generate(givenAuthMemberId, givenUsername, givenServiceMemberId))
             .willReturn(expectingAccessToken);
 
-        given(refreshTokenManager.issue(givenMemberId, givenUsername))
-            .willReturn(new RefreshToken(expectingRefreshToken, givenMemberId, givenUsername, LocalDateTime.now()));
+        given(refreshTokenManager.issue(givenAuthMemberId, givenUsername))
+            .willReturn(new RefreshToken(expectingRefreshToken, givenAuthMemberId, givenUsername, LocalDateTime.now()));
 
         // when
-        AuthToken issued = jwtIssuer.issue(givenMemberId, givenUsername);
+        AuthToken issued = jwtIssuer.issue(givenAuthMemberId, givenUsername, givenServiceMemberId);
 
         // then
         assertThat(tuple(issued.accessToken(), issued.refreshToken()))
@@ -65,16 +67,16 @@ class JwtIssuerImplTest {
     @Test
     void renew() {
         // given
-        given(accessTokenGenerator.generate(givenMemberId, givenUsername))
+        given(accessTokenGenerator.generate(givenAuthMemberId, givenUsername, givenServiceMemberId))
             .willReturn(expectingAccessToken);
 
         given(refreshTokenManager.renew(expectingRefreshToken, givenUsername))
-            .willReturn(new RefreshToken(expectingRenewedRefreshToken, givenMemberId, givenUsername, LocalDateTime.now()));
+            .willReturn(new RefreshToken(expectingRenewedRefreshToken, givenAuthMemberId, givenUsername, LocalDateTime.now()));
 
         String givenRefreshToken = expectingRefreshToken;
 
         // when
-        AuthToken renew = jwtIssuer.renew(givenRefreshToken, givenUsername);
+        AuthToken renew = jwtIssuer.renew(givenRefreshToken, givenUsername, givenServiceMemberId);
 
         // then
         assertThat(renew)

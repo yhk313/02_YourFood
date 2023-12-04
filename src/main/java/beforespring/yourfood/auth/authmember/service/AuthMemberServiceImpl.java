@@ -89,20 +89,22 @@ public class AuthMemberServiceImpl implements AuthMemberService {
         authMember.joinConfirm();
     }
 
-    // todo your food member 의 ID와 auth member id 모두 기입
     @Override
     public AuthToken authenticate(PasswordAuth passwordAuth) {
-        AuthMember authMember = authMemberRepository.findByUsername(passwordAuth.username())
-                                    .orElseThrow(AuthMemberNotFoundException::new);
-
+        AuthMember authMember = getAuthMemberByUsername(passwordAuth.username());
         authMember.verifyPassword(passwordAuth.password(), passwordHasher);
-        authMember.verifyConfirmState();
 
-        return jwtIssuer.issue(authMember.getYourFoodId(), authMember.getUsername());
+        return jwtIssuer.issue(authMember.getId(), authMember.getUsername(), authMember.getYourFoodId());
     }
 
     @Override
     public AuthToken authenticate(RefreshTokenAuth refreshTokenAuth) {
-        return jwtIssuer.renew(refreshTokenAuth.refreshToken(), refreshTokenAuth.username());
+        AuthMember authMember = getAuthMemberByUsername(refreshTokenAuth.username());
+        return jwtIssuer.renew(refreshTokenAuth.refreshToken(), refreshTokenAuth.username(), authMember.getYourFoodId());
+    }
+
+    private AuthMember getAuthMemberByUsername(String username) {
+        return authMemberRepository.findByUsername(username)
+                .orElseThrow(AuthMemberNotFoundException::new);
     }
 }

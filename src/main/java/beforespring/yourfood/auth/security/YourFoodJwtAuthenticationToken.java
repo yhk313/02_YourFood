@@ -19,9 +19,8 @@ public class YourFoodJwtAuthenticationToken extends JwtAuthenticationToken imple
     public YourFoodJwtAuthenticationToken(JwtAuthenticationToken target) {
         super(target.getToken());
         Map<String, Object> attributes = target.getTokenAttributes();
-        this.memberId = Long.parseLong((String) attributes.get("memberId"));
-        Object authMemberId = attributes.get("authMemberId");
-        this.authMemberId = authMemberId == null ? null : Long.parseLong((String) authMemberId);
+        this.memberId = Long.parseLong(attributes.get("memberId").toString());
+        this.authMemberId = Long.parseLong(attributes.get("authId").toString());
         this.username = (String) attributes.get("username");
         this.target = target;
     }

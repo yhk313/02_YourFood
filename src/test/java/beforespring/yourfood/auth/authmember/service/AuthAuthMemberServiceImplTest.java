@@ -64,8 +64,8 @@ class AuthAuthMemberServiceImplTest {
     void member_join_test() {
 
         //when
-        Long memberId = authMemberService.join(signupMemberRequest);
-        AuthMember findAuthMember = authMemberRepository.findById(memberId).orElseThrow(
+        Long authMemberId = authMemberService.join(signupMemberRequest);
+        AuthMember findAuthMember = authMemberRepository.findById(authMemberId).orElseThrow(
             AuthMemberNotFoundException::new);
 
         //then
@@ -77,8 +77,8 @@ class AuthAuthMemberServiceImplTest {
     void create_confirm_test() {
 
         //when
-        Long memberId = authMemberService.join(signupMemberRequest);
-        AuthMember findAuthMember = authMemberRepository.findById(memberId).orElseThrow(
+        Long authMemberId = authMemberService.join(signupMemberRequest);
+        AuthMember findAuthMember = authMemberRepository.findById(authMemberId).orElseThrow(
             AuthMemberNotFoundException::new);
         Confirm findConfirm = confirmRepository.findByAuthMember(findAuthMember).orElseThrow(
             ConfirmNotFoundException::new);
@@ -91,8 +91,8 @@ class AuthAuthMemberServiceImplTest {
     @DisplayName("가입 승인 요청의 토큰과 저장된 토큰이 일치하면 멤버가 승인 상태가 되어야 합니다.")
     void join_confirm_test() {
         //given
-        Long memberId = authMemberService.join(signupMemberRequest);
-        AuthMember findAuthMember = authMemberRepository.findById(memberId).orElseThrow(
+        Long authMemberId = authMemberService.join(signupMemberRequest);
+        AuthMember findAuthMember = authMemberRepository.findById(authMemberId).orElseThrow(
             AuthMemberNotFoundException::new);
         Confirm findConfirm = confirmRepository.findByAuthMember(findAuthMember).orElseThrow(ConfirmNotFoundException::new);
 
@@ -125,8 +125,8 @@ class AuthAuthMemberServiceImplTest {
     @DisplayName("가입 승인 요청 시 저장된 계정이 없으면 가입 승인 요청이 실패해야 합니다.")
     void join_confirm_no_user_test() {
         //given
-        Long memberId = authMemberService.join(signupMemberRequest);
-        AuthMember findAuthMember = authMemberRepository.findById(memberId).orElseThrow(
+        Long authMemberId = authMemberService.join(signupMemberRequest);
+        AuthMember findAuthMember = authMemberRepository.findById(authMemberId).orElseThrow(
             AuthMemberNotFoundException::new);
         Confirm findConfirm = confirmRepository.findByAuthMember(findAuthMember).orElseThrow(ConfirmNotFoundException::new);
         String token = findConfirm.getToken();
@@ -160,21 +160,27 @@ class AuthAuthMemberServiceImplTest {
             .describedAs("비밀번호가 일치하지 않으면 가입 요청에 실패해야 합니다.");
     }
 
+    void initAuthMember(String username, String password, Long yourFoodId) {
+        AuthMember givenAuthMember = AuthMember.builder()
+                                         .username(username)
+                                         .raw(password)
+                                         .hasher(passwordHasher)
+                                         .build();
+        givenAuthMember.updateYourFoodId(yourFoodId);
+        authMemberRepository.save(givenAuthMember);
+        em.flush();
+        em.clear();
+    }
+
     @Test
     @DisplayName("인증 성공시 JWT 발급")
     void authenticate_password() {
         // given
         String givenUsername = randString();
         String givenPassword = randString();
+        Long givenYourFoodId = 10L;
 
-        AuthMember givenAuthMember = AuthMember.builder()
-                           .username(givenUsername)
-                           .raw(givenPassword)
-                           .hasher(passwordHasher)
-                           .build();
-        authMemberRepository.save(givenAuthMember);
-        em.flush();
-        em.clear();
+        initAuthMember(givenUsername, givenPassword, givenYourFoodId);
 
         // when
         AuthToken res = authMemberService.authenticate(
@@ -192,14 +198,9 @@ class AuthAuthMemberServiceImplTest {
         String givenUsername = randString();
         String givenPassword = randString();
 
-        AuthMember givenAuthMember = AuthMember.builder()
-                           .username(givenUsername)
-                           .raw(givenPassword)
-                           .hasher(passwordHasher)
-                           .build();
-        authMemberRepository.save(givenAuthMember);
-        em.flush();
-        em.clear();
+        Long givenYourFoodId = 10L;
+
+        initAuthMember(givenUsername, givenPassword, givenYourFoodId);
 
         AuthToken authenticate = authMemberService.authenticate(
             new PasswordAuth(givenUsername, givenPassword));
