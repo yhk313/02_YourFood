@@ -20,4 +20,11 @@ public class RestaurantComparators {
         );
         return desc ? ret.reversed() : ret;
     }
+    public static Comparator<Restaurant> sortBy(OrderBy orderBy, boolean descendingOrder,
+        Coordinates coordinates) {
+        return orderBy == OrderBy.RATING
+                   ? byRatingAverage(descendingOrder)
+                   : byDistance(descendingOrder, coordinates);
+    }
+
 }

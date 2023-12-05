@@ -10,7 +10,7 @@ import beforespring.yourfood.web.api.common.GenericResponse;
 import beforespring.yourfood.web.api.common.StatusCode;
 import beforespring.yourfood.web.api.restaurant.response.RegionDto;
 import beforespring.yourfood.web.api.restaurant.response.RegionListResponse;
-import beforespring.yourfood.web.api.restaurant.response.RestaurantDto;
+import beforespring.yourfood.app.restaurant.service.dto.RestaurantDto;
 import beforespring.yourfood.web.api.restaurant.response.RestaurantListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
