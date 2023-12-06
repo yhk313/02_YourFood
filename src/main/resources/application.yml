@@ -5,3 +5,9 @@ beforespring:
     sync: 0 0 4 * * ?
     # 매일 오전 11시 30분에 실행
     lunch: 0 30 11 * * ?
+
+  recommendation:
+    # 반경 1000m 이내의 맛집 추천
+    rangeInMeters: 1000
+    # 카테고리별 맛집 수를 5개로 제한
+    limitByCuisineType: 5
