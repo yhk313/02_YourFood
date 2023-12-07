@@ -6,7 +6,6 @@ import beforespring.yourfood.auth.authmember.service.dto.PasswordAuth;
 import beforespring.yourfood.auth.authmember.service.dto.RefreshTokenAuth;
 import beforespring.yourfood.auth.jwt.domain.AuthToken;
 import beforespring.yourfood.web.api.common.GenericResponse;
-import beforespring.yourfood.web.api.common.StatusCode;
 import beforespring.yourfood.web.api.member.request.SignupMemberRequest;
 import beforespring.yourfood.web.api.member.response.SignupResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +30,9 @@ public class AuthController {
     ) {
         Long memberId = authMemberService.join(signupMemberRequest);
 
-        SignupResponse signupResponse = SignupResponse.builder()
-                                            .id(memberId)
-                                            .build();
+        SignupResponse signupResponse = new SignupResponse(memberId);
 
-        return GenericResponse.<SignupResponse>builder()
-                   .statusCode(StatusCode.CREATED)
-                   .message("Success")
-                   .data(signupResponse)
-                   .build();
+        return GenericResponse.ok(signupResponse);
     }
 
     @PostMapping("/auth")
@@ -47,11 +40,7 @@ public class AuthController {
         @RequestBody PasswordAuth passwordAuth
     ) {
         AuthToken authToken = authMemberService.authenticate(passwordAuth);
-        return GenericResponse.<AuthToken>builder()
-                   .statusCode(StatusCode.OK)
-                   .message("Success")
-                   .data(authToken)
-                   .build();
+        return GenericResponse.ok(authToken);
     }
 
     @PostMapping("/confirm")
@@ -59,10 +48,7 @@ public class AuthController {
         @RequestBody ConfirmTokenDto.ConfirmTokenRequest request
     ) {
         authMemberService.joinConfirm(request);
-        return GenericResponse.<AuthToken>builder()
-                   .statusCode(StatusCode.OK)
-                   .message("Success")
-                   .build();
+        return GenericResponse.ok();
     }
 
     @PostMapping("/renew")
@@ -71,11 +57,6 @@ public class AuthController {
     ) {
 
         AuthToken authToken = authMemberService.authenticate(refreshTokenAuth);
-        return GenericResponse.<AuthToken>builder()
-                   .statusCode(StatusCode.OK)
-                   .message("success")
-                   .data(authToken)
-                   .build();
+        return GenericResponse.ok(authToken);
     }
-
 }

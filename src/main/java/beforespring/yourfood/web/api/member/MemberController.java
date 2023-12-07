@@ -1,7 +1,6 @@
 package beforespring.yourfood.web.api.member;
 
 import beforespring.yourfood.app.member.service.MemberService;
-import beforespring.yourfood.web.api.common.StatusCode;
 import beforespring.yourfood.web.api.member.request.UpdateLocationRequest;
 import beforespring.yourfood.web.api.member.request.UpdateLunchRecommendationConsent;
 import beforespring.yourfood.web.api.common.GenericResponse;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 public class MemberController {
+
     private final MemberService memberService;
 
     /**
@@ -31,12 +31,9 @@ public class MemberController {
             request.consent(),
             request.memberId()
         );
-
-        return GenericResponse.<UpdateUserSettingResponse>builder()
-            .statusCode(StatusCode.CREATED)
-            .message("Success")
-            .build();
+        return GenericResponse.ok();
     }
+
     /**
      * 회원 위치 업데이트
      *
@@ -48,12 +45,11 @@ public class MemberController {
         @RequestBody UpdateLocationRequest request
     ) {
 
-        memberService.updateLocation(request.lat(), request.lon(), request.memberId());
+        memberService.updateLocation(
+            request.lat(),
+            request.lon(),
+            request.memberId());
 
-        return GenericResponse.<UpdateUserSettingResponse>builder()
-            .statusCode(StatusCode.CREATED)
-            .message("Success")
-            .build();
+        return GenericResponse.ok();
     }
-
 }
