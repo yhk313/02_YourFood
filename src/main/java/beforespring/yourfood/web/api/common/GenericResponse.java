@@ -1,17 +1,22 @@
 package beforespring.yourfood.web.api.common;
 
 import lombok.Builder;
-import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
-@Getter
-public class GenericResponse<T> {
-    private int statusCode;
-    private T data;
-    private String message;
+public record GenericResponse<T>(
+    int statusCode,
+    T data,
+    String message) {
+
     @Builder
-    public GenericResponse(int statusCode, T data, String message) {
-        this.statusCode = statusCode;
-        this.data = data;
-        this.message = message;
+    public GenericResponse {
+    }
+
+    public static <T> GenericResponse<T> ok(T data) {
+        return new GenericResponse<>(HttpStatus.OK.value(), data, HttpStatus.OK.getReasonPhrase());
+    }
+
+    public static <T> GenericResponse<T> ok() {
+        return new GenericResponse<>(HttpStatus.OK.value(), null, HttpStatus.OK.getReasonPhrase());
     }
 }
