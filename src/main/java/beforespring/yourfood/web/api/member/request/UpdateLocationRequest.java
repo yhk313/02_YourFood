@@ -1,4 +1,6 @@
 package beforespring.yourfood.web.api.member.request;
 
-public record UpdateLocationRequest(String lat, String lon, Long memberId) {
+import java.math.BigDecimal;
+
+public record UpdateLocationRequest(BigDecimal lat, BigDecimal lon, Long memberId) {
 }

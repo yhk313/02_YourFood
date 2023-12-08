@@ -30,9 +30,9 @@ public class AuthController {
     ) {
         Long memberId = authMemberService.join(signupMemberRequest);
 
-        SignupResponse signupResponse = new SignupResponse(memberId);
+        SignupResponse response = new SignupResponse(memberId);
 
-        return GenericResponse.ok(signupResponse);
+        return GenericResponse.ok(response);
     }
 
     @PostMapping("/auth")

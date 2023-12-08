@@ -31,9 +31,9 @@ public class RestaurantController {
      */
     @GetMapping("/regions")
     public GenericResponse<RegionListResponse> getRegions() {
-        List<RegionDto> allSggLatLon = sggLatLonService.getAllSggLatLon();
-        RegionListResponse regionListResponse = new RegionListResponse(allSggLatLon);
-        return GenericResponse.ok(regionListResponse);
+        List<RegionDto> result = sggLatLonService.getAllSggLatLon();
+        RegionListResponse response = new RegionListResponse(result);
+        return GenericResponse.ok(response);
     }
 
     /**
@@ -45,9 +45,9 @@ public class RestaurantController {
     @GetMapping("/{restaurantId}")
     public GenericResponse<RestaurantWithReviewDto> getRestaurantDetail(
         @PathVariable Long restaurantId) {
-        RestaurantWithReviewDto restaurantDto = restaurantService.getRestaurantDetail(restaurantId);
+        RestaurantWithReviewDto result = restaurantService.getRestaurantDetail(restaurantId);
 
-        return GenericResponse.ok(restaurantDto);
+        return GenericResponse.ok(result);
     }
 
     /**
@@ -60,25 +60,24 @@ public class RestaurantController {
      * @param descendingOrder 내림차순 정렬 여부
      * @return 맛집 목록
      */
-    @GetMapping("")
+    @GetMapping
     public GenericResponse<RestaurantListResponse> getRestaurants(
         @RequestParam Integer rangeInMeter,
-        @RequestParam String lat,
-        @RequestParam String lon,
+        @RequestParam("lat") BigDecimal lat,
+        @RequestParam("lon") BigDecimal lon,
         @RequestParam(required = false) OrderBy orderBy,
         @RequestParam(required = false) boolean descendingOrder) {
-        BigDecimal latDecimal = new BigDecimal(String.valueOf(lat));
-        BigDecimal lonDecimal = new BigDecimal(String.valueOf(lon));
-        Coordinates coordinates = new Coordinates(latDecimal, lonDecimal);
 
-        List<RestaurantDto> restaurantDtos = restaurantService.getRestaurants(
+        Coordinates coordinates = new Coordinates(lat, lon);
+
+        List<RestaurantDto> result = restaurantService.getRestaurants(
             orderBy,
             descendingOrder,
             coordinates,
             rangeInMeter);
 
-        RestaurantListResponse restaurantListResponse = new RestaurantListResponse(restaurantDtos);
+        RestaurantListResponse response = new RestaurantListResponse(result);
 
-        return GenericResponse.ok(restaurantListResponse);
+        return GenericResponse.ok(response);
     }
 }

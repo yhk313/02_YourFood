@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class MemberServiceImplTest {
+
     @InjectMocks
     private MemberServiceImpl memberService;
 
@@ -39,16 +40,16 @@ class MemberServiceImplTest {
     @DisplayName("사용자 위치 업데이트 테스트")
     public void testUpdateLocation() {
         Long memberId = 1L;
+        BigDecimal lat = new BigDecimal("37.12222");
+        BigDecimal lon = new BigDecimal("128.95555");
         Member member = Member.builder()
-            .username("Test username")
-
-            .build();
+                            .username("Test username")
+                            .build();
         when(memberRepository.getReferenceById(memberId)).thenReturn(member);
 
-        memberService.updateLocation("37.12222", "128.95555", memberId);
+        memberService.updateLocation(lat, lon, memberId);
 
-        assertEquals(new BigDecimal("37.12222"), member.getCoordinates().getLat());
-        assertEquals(new BigDecimal("128.95555"), member.getCoordinates().getLon());
+        assertEquals(lat, member.getCoordinates().getLat());
+        assertEquals(lon, member.getCoordinates().getLon());
     }
-
 }

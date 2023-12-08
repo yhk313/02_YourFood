@@ -34,9 +34,9 @@ public class MemberServiceImpl implements MemberService {
      *@param memberId 사용자Id
      */
     @Override
-    public void updateLocation(String lat, String lon, Long memberId) {
+    public void updateLocation(BigDecimal lat, BigDecimal lon, Long memberId) {
         Member member = memberRepository.getReferenceById(memberId);
-        Coordinates coordinate = new Coordinates(new BigDecimal(lat), new BigDecimal(lon));
+        Coordinates coordinate = new Coordinates(lat, lon);
         member.updateMemberLocation(coordinate);
     }
 
