@@ -45,6 +45,7 @@ jobs:
         cd ./src/main/resources
         touch ./application-prod.yml
         echo "${{ secrets.YML_PROD }}" > ./application-prod.yml
+        cat ./src/main/resources/application-prod.yml
       shell: bash
 
     - name: Build with Gradle
@@ -54,7 +55,7 @@ jobs:
     - name: Docker build & push to docker repo
       run: |
            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-           docker build -f Dockerfile-dev -t ${{ secrets.DOCKER_USERNAME }}/docker-test-prod .
+           docker build -t ${{ secrets.DOCKER_USERNAME }}/docker-test-prod .
            docker push ${{ secrets.DOCKER_USERNAME }}/docker-test-prod
 
          
