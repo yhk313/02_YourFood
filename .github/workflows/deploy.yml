@@ -51,7 +51,8 @@ jobs:
         port: 22
         # 도커 작업
         script: |
-          sudo docker rm -f $(docker ps -qa)
-          sudo docker pull ${{ secrets.DOCKER_REPO }}/docker-test-prod
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker rm $(docker ps -a -q)
+          docker rmi ${{ secrets.DOCKER_USERNAME }}/docker-test-prod
+          docker pull ${{ secrets.DOCKER_USERNAME }}/docker-test-prod
           docker-compose up -d
-          docker image prune -f
